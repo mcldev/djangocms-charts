@@ -1,0 +1,242 @@
+<div id="input-table"></div>
+
+<script type="text/javascript">
+    //<![CDATA]
+
+    (function ($) {
+
+        $(document).ready(function () {
+
+            //Get data if exists
+            //*******************************************
+            var orig_data = null;
+            {% if data %}
+                orig_data = {{ data|safe }};
+            {% endif %}
+            var temp_data = orig_data;
+
+            // Chart type sets the columns
+            //*******************************************
+            var chart_type = "{{ chart_type|safe }}";
+
+            //Get Chart types and set headers, input table container etc.
+            //*******************************************
+            var LABEL_VALUE_CHART_TYPES = {{ LABEL_VALUE_CHART_TYPES|safe }};
+            var container = document.getElementById("input-table");
+            var input_table;
+
+            //Set Rendering Functions for Labels or Values
+            //*******************************************
+            var labelRenderer = function (instance, td, row, col, prop, value, cellProperties) {
+                Handsontable.TextCell.renderer.apply(this, arguments);
+                td.style.background = '#EAEAEA';
+                td.style.fontWeight = 'bold';
+                td.style.textAlign = 'center';
+            };
+
+            var valueRenderer = function (instance, td, row, col, prop, value, cellProperties) {
+                Handsontable.TextCell.renderer.apply(this, arguments);
+                td.style.background = 'white !important';
+                td.style.fontWeight = 'normal !important';
+            };
+
+            //Set Labels in top or left cols
+            //*******************************************
+            var labels_top = $("#id_labels_top").is(':checked');
+            var labels_left = $("#id_labels_left").is(':checked');
+            var data_series_select = $("#id_data_series_select").val();
+
+
+            //Get the data as a two columns or full data
+            //*******************************************
+            function array_get_cols(the_data, num_cols) {
+                if(!the_data) return;
+                num_cols = num_cols ? num_cols : the_data[0].length;
+                var x = the_data.map(function (the_row) {
+                    return the_row.slice(0, num_cols);
+                });
+                return x;
+            }
+
+
+            //Output the table data on change or rebuild to the django div for save/loading.
+            //*******************************************
+            function get_table_data(){
+                if (input_table != undefined) {
+                    var get_data = input_table.getData();
+                    return get_data;
+                }
+                return orig_data;
+            }
+            function output_data_to_dom(){
+                $("#id_{{ name }}").val(JSON.stringify(get_table_data()));
+            }
+            function get_data_from_dom(){
+                var get_data = $("#id_{{ name }}").val();
+                if(get_data) {
+                    get_data = JSON.parse(get_data);
+                    return get_data;
+                }
+                return orig_data;
+            }
+
+            //Get Header Labels in First Row and/or First Column
+            //*******************************************
+            //On change of Header Labels - update validation and render table
+            $("#id_labels_top").change(function () {
+                validate_and_render();
+            });
+            $("#id_labels_left").change(function () {
+                validate_and_render();
+            });
+
+
+            // Build Default Settings
+            //*******************************************
+            var options = {
+
+                //Common Settings
+                // ---------------------------
+                rowHeaders: true,
+                colHeaders: true,
+                contextMenu: false,
+                startRows: 5,
+                minRows: 1,
+                minCols: 1,
+                manualColumnResize: true,
+
+                // On Change write the data to temp area as json
+                // ---------------------------
+                afterChange: function (change, source) {
+                    temp_data = get_table_data();
+                    output_data_to_dom();
+                },
+                afterRender: function () {
+                    temp_data = get_table_data();
+                    output_data_to_dom();
+                },
+
+                //Format each cell based on label/value renderer
+                // ---------------------------
+                cells: function (row, col, prop) {
+
+                    var cellProperties = {};
+
+                    //If Label then set to grey background and text input
+                    if ((row == 0 && $("#id_labels_top").is(':checked')) || (col == 0 && $("#id_labels_left").is(':checked'))) {
+                        cellProperties = {
+                            type: 'text',
+                            renderer: labelRenderer,
+                            validator: undefined //must be set explicitly as handsontable isn't working!
+                        };
+                        //If Input values then must be numeric for chart
+                    } else {
+                        cellProperties = {
+                            type: 'numeric',
+                            renderer: valueRenderer
+                        };
+                    }
+                    return cellProperties;
+                }
+            };
+
+            //Get the options based on Chart Type
+            //*******************************************
+            function set_options(chart_type) {
+
+                // Label - Value Cols
+                // ---------------------------
+                if($.inArray(chart_type, LABEL_VALUE_CHART_TYPES) > -1) {
+
+                    //Set the checkbox values
+                    // ---------------------------
+                    labels_top = $("#id_labels_top").is(':checked');
+                    labels_left = $("#id_labels_left").is(':checked');
+                    data_series_select= $("#id_data_series_select").val();
+
+                    $("#id_labels_top").prop('checked', false);
+                    $("#id_labels_left").prop('checked', true);
+                    $("#id_data_series_select").val('Rows');
+
+                    //Get data as a 2 column array only
+                    // ---------------------------
+                    options['data'] = array_get_cols(temp_data, 2);
+
+                    // Set options for polar, pie, dougnut charts
+                    // ---------------------------
+                    options['colHeaders'] = ['Labels', 'Values'];
+                    options['columns'] = [
+                        {
+                            // column options for the first column
+                            type: 'text'
+                        },
+                        {
+                            // column options for the second column
+                            type: 'numeric'
+                        }
+                    ];
+                    options['contextMenu'] = ['undo', 'redo', '---------', 'row_above', 'row_below', 'remove_row'];
+
+                } else {
+
+                // Data Series Cols
+                // ---------------------------
+
+                    //Set the checkbox values
+                    // ---------------------------
+                    $("#id_labels_top").prop('checked', labels_top);
+                    $("#id_labels_left").prop('checked', labels_left);
+                    $("#id_data_series_select").val(data_series_select);
+
+                    //Get data as original loaded data
+                    // ---------------------------
+                    options['data'] = temp_data;
+
+                    //Set options for all other types of charts
+                    // ---------------------------
+                    options['colHeaders'] = true;
+                    options['columns'] = null;
+                    options['startCols'] = 5;
+                    options['contextMenu'] = ['undo', 'redo', '---------', 'row_above', 'row_below', 'remove_row', '---------', 'col_left', 'col_right', 'remove_col'];
+                }
+
+                //Common for all chart types
+                // ---------------------------
+                validate_and_render();
+
+            }
+
+
+            //Build Table
+            //*******************************************
+            build_table();
+
+            function build_table() {
+                set_options(chart_type);
+                if (input_table != undefined && input_table.table != null) {
+                    input_table.destroy();
+                    input_table = undefined;
+                }
+                input_table = new Handsontable(container, options);
+                output_data_to_dom();
+                validate_and_render();
+            }
+
+            function validate_and_render() {
+                if(input_table != undefined) {
+                    input_table.validateCells();
+                    input_table.render();
+                }
+            }
+
+        });
+    })(jQuery);
+
+
+    //]]>
+</script>
+<style type="text/css">
+    #id_{{ name }} {
+        display: none !important;
+    }
+</style>

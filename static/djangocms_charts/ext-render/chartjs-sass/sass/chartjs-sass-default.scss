@@ -1,0 +1,176 @@
+@import 'chartjs-sass.scss', '_flexbox.scss';
+
+//Set default colors - from angluar js version of chartjs - random colors thereafter for 10 in total
+@include chart_colors(($Blue, $Light_Grey, $Red, $Green, $Yellow, $Grey, $Dark_Grey), 10);
+
+/* Chart Title */
+/* ---------------------------- */
+.chart-title {
+    display: block;
+    margin-bottom: 10px;
+    &.chart-center {
+        margin-left: auto;
+        margin-right: auto;
+    }
+    &.chart-right {
+        margin-left: auto;
+        margin-right: 0;
+    }
+    &.chart-left {
+        margin-left: 0;
+        margin-right: auto;
+    }
+}
+
+/* Chart Container -- To position the Chart Legend wrap the .chart and .chart-legend in .chart-container */
+/* ---------------------------- */
+.chart-container {
+
+    /* Chart Container Formats */
+    /* ---------------------------- */
+    //Set Margin variables
+    $horizontal-margin: 10px;
+    $vertical-margin: 10px;
+
+    //Set container width to be 100% of parent container
+    width:100%;
+
+    //Set as inline flex
+    @extend %inline-flex;
+
+    /* Set chart and legend as no wrap to stop moving to next line */
+    /* ---------------------------- */
+    @include flex-wrap(nowrap);
+
+    /* Chart Container Content */
+    /* ---------------------------- */
+    //Justify content - center in parent by default
+    &.chart-center {
+        &.legend-left,
+        &.legend-right {
+                @include justify-content(center);
+            }
+        &.legend-bottom,
+        &.legend-top {
+            @include align-items(center);
+        }
+    }
+    &.chart-left {
+        &.legend-bottom,
+        &.legend-top {
+            @include align-items(flex-start);
+        }
+        &.legend-left {
+            @include justify-content(flex-end);
+        }
+        &.legend-right {
+            @include justify-content(flex-start);
+        }
+    }
+    &.chart-right {
+        &.legend-bottom,
+        &.legend-top {
+            @include align-items(flex-end);
+        }
+        &.legend-left {
+            @include justify-content(flex-start);
+        }
+        &.legend-right {
+            @include justify-content(flex-end);
+        }
+    }
+
+
+    /* Align Legend Items vertically */
+    /* ---------------------------- */
+    //Align left/right - center legend vertically to chart
+    &.legend-left,
+    &.legend-right {
+        @include align-items(center);
+        .chart-legend {
+            li {
+                display: list-item;
+            }
+        }
+    }
+    //Display the legend horizontally (inline) for top/bottom
+    &.legend-top,
+    &.legend-bottom {
+        .chart-legend {
+            text-align: center;
+            li {
+                display: inline-block;
+            }
+        }
+    }
+
+    /* Set order of items for Legend on Left/Right or Top/Bottom of Chart */
+    /* ---------------------------- */
+    //Reverse order for top or left position
+    &.legend-left {
+        @include flex-direction(row-reverse);
+        .chart-legend {
+            margin-right: $horizontal-margin;
+        }
+    }
+    &.legend-right {
+        @include flex-direction(row);
+        .chart-legend {
+            margin-left: $horizontal-margin;
+        }
+    }
+    &.legend-top {
+        @include flex-direction(column-reverse);
+    }
+    &.legend-bottom {
+        @include flex-direction(column);
+        .chart-legend {
+            margin-top: $vertical-margin;
+        }
+    }
+}
+
+/* Chart Legend Format */
+/* ---------------------------- */
+//For all chart-legend ul lists and chart-legend>ul
+.chart-legend ul,
+.chart-legend>ul
+ {
+    list-style-type: none;
+    margin-top: 5px;
+
+    /* NOTE: Browsers automatically add 40px of padding-left to all lists, so we should offset that, otherwise the legend is off-center */
+    -webkit-padding-start: 0;
+    /* Webkit */
+    -moz-padding-start: 0;
+    /* Mozilla */
+    padding-left: 0;
+    /* IE (handles all cases, really, but we should also include the vendor-specific properties just to be safe) */
+
+    li {
+        white-space: nowrap;
+        position: relative;
+        margin-bottom: 4px;
+        border-radius: 5px;
+        padding: 2px 8px 2px 28px;
+        font-size: smaller;
+        cursor: default;
+
+        //Span block for legend 'icon'
+        span {
+            display: block;
+            position: absolute;
+            left: 0;
+            top: 0;
+            width: 20px;
+            height: 20px;
+            border-radius: 5px;
+        }
+    }
+}
+
+
+
+
+
+

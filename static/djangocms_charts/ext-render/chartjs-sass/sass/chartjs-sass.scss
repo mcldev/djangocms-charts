@@ -1,0 +1,95 @@
+/*
+     Chartjs - SASS
+     Use CSS formatting for Chartjs
+     Combine with chartjs-sass.js + chartjs-sass-default.css + own custom css
+ */
+
+
+// Default colors - random thereafter, unless specified (from angularjs imlementation)
+$Blue: rgb(151,187,205);
+$Light_Grey: rgb(220,220,220);
+$Red: rgb(247,70,74);
+$Green: rgb(70,191,189);
+$Yellow: rgb(253,180,92);
+$Grey: rgb(148,159,177);
+$Dark_Grey: rgb(77,83,96);
+$White: rgb(255,255,255);
+
+
+/* Mixin to define each chart element based on a base color */
+@mixin chart_colors($base_colors:null, $num_required:null) {
+
+	//Just create the base colors if they are only provided
+    @if $num_required == null {
+        $num_required: length($base_colors);
+    }
+
+    //For each required color
+    @for $i from 1 through $num_required {
+		$base_color: null;
+
+		// Use the base color if provided, or a random color
+		@if $base_colors != null and $i <= length($base_colors) {
+            $base_color: nth($base_colors, $i);
+        } @else {
+            $base_color: getRandomColor();
+        }
+
+        // If there is a parent then add the parent selector as an AND selector
+        $pid: null;
+        @if & {
+            $pid: '&';
+        }
+		//Create each id and class with the specified (or random) color
+
+		//Line + Radar
+		#{$pid}.line,
+		#{$pid}.radar{
+			&.fillColor_#{$i} { color: rgba($base_color, 0.2); }
+			&.strokeColor_#{$i} { color: $base_color; }
+			&.pointColor_#{$i} { color: $base_color; }
+			&.pointStrokeColor_#{$i} { color: $White; }
+			&.pointHighlightFill_#{$i} { color: $White; }
+			&.pointHighlightStroke_#{$i} { color: $base_color; }
+		}
+		// Bar
+		#{$pid}.bar {
+			&.fillColor_#{$i} { color: rgba($base_color, 0.5); }
+			&.strokeColor_#{$i} { color: rgba($base_color, 0.8); }
+			&.highlightFill_#{$i} { color: rgba($base_color, 0.75); }
+        	&.highlightStroke_#{$i} { color: $base_color; }
+		}
+		// Polar + Pie + Doughnut - lighten highlight color
+		#{$pid}.pie,
+		#{$pid}.polararea,
+		#{$pid}.doughnut {
+			&.color_#{$i}  { color: $base_color; }
+			&.highlight_#{$i}  { color: lighten($base_color, 5%); }
+		}
+
+		//Include the legend color values attached to the [chartid]_legend
+        @if & {
+            $pid: '&' + '_legend';
+        }
+		//#{$pid} .legend_text_#{$i} { color: $base_color; }
+		#{$pid} .legend_icon_#{$i} { background: $base_color; }
+    }
+}
+
+@function getRandomColor(){
+    $red: random(256)-1;
+    $green: random(256)-1;
+    $blue: random(256)-1;
+    @return rgb($red, $green, $blue);
+}
+
+%clearfix {
+    &:after {
+        content: " ";
+        visibility: hidden;
+        display: block;
+        height: 0;
+        overflow: auto;
+        clear: both;
+    }
+}
