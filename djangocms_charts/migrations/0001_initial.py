@@ -8,7 +8,7 @@ import djangocms_charts.base.models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('cms', '0014_auto_20160404_1908'),
+        ('cms', '0001_initial'),
         ('sites', '0001_initial'),
     ]
 
