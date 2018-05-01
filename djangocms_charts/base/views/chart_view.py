@@ -1,7 +1,7 @@
 from .json_view import JSONView
 import json
 from djangocms_charts.utils import *
-
+from six import string_types
 
 class BaseChartView(JSONView):
 
@@ -28,7 +28,7 @@ class BaseChartView(JSONView):
         self.data_series_in_rows = (chart_data_instance.data_series_format == 'rows')
 
         #If Table data is a string (as saved by django) then load it as array.
-        table_data = json.loads(chart_data_instance.table_data) if isinstance(chart_data_instance.table_data, basestring) else chart_data_instance.table_data
+        table_data = json.loads(chart_data_instance.table_data) if isinstance(chart_data_instance.table_data, string_types) else chart_data_instance.table_data
 
         # Switch top/left if data is transposed
         if self.data_series_in_rows:

@@ -1,19 +1,19 @@
 
-class HighchartPlotLineChartView(HighChartsView):
-    y_axis_title = None
-
-    def get_y_axis_options(self):
-        return {'title': {'text': u'%s' % self.y_axis_title}}
-
-    def get_context_data(self):
-        data = super(HighchartPlotLineChartView, self).get_context_data()
-        data['labels'] = self.get_labels()
-        data['series'] = self.get_series()
-        data['yAxis'] = self.get_y_axis_options()
-        return data
-
-    def get_providers(self):
-        return []
+# class HighchartPlotLineChartView(HighChartsView):
+#     y_axis_title = None
+#
+#     def get_y_axis_options(self):
+#         return {'title': {'text': u'%s' % self.y_axis_title}}
+#
+#     def get_context_data(self):
+#         data = super(HighchartPlotLineChartView, self).get_context_data()
+#         data['labels'] = self.get_labels()
+#         data['series'] = self.get_series()
+#         data['yAxis'] = self.get_y_axis_options()
+#         return data
+#
+#     def get_providers(self):
+#         return []
 
 
 # $(function () {
@@ -32,7 +32,7 @@ class HighchartPlotLineChartView(HighChartsView):
 #         },
 #         yAxis: {
 #             title: {
-#                 text: 'Temperature (°C)'
+#                 text: 'Temperature (C)'
 #             },
 #             plotLines: [{
 #                 value: 0,
@@ -41,7 +41,7 @@ class HighchartPlotLineChartView(HighChartsView):
 #             }]
 #         },
 #         tooltip: {
-#             valueSuffix: '°C'
+#             valueSuffix: 'C'
 #         },
 #         legend: {
 #             layout: 'vertical',

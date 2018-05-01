@@ -1,6 +1,6 @@
 from django.forms.models import model_to_dict
 from django.db.models import Q
-
+from six import string_types
 
 def transpose(the_array):
     ret = map(list, zip(*the_array))
@@ -46,26 +46,26 @@ def get_fields_and_values_from_instance(instance, filter_fields_lambda=None, fil
 
     # Remove blank values
     if skip_blanks:
-        settings_dict = {f: v for f, v in settings_dict.iteritems() if v != None and v != ""}
+        settings_dict = {f: v for f, v in settings_dict.items() if v != None and v != ""}
 
     # Filter settings if provided
     if filter_fields_lambda:
-        settings_dict = {f: v for f, v in settings_dict.iteritems() if filter_fields_lambda(f)}
+        settings_dict = {f: v for f, v in settings_dict.items() if filter_fields_lambda(f)}
 
     if filter_values_lambda:
-        settings_dict = {f: v for f, v in settings_dict.iteritems() if filter_values_lambda(v)}
+        settings_dict = {f: v for f, v in settings_dict.items() if filter_values_lambda(v)}
 
     if convert_fields_lambda:
-        settings_dict = { convert_fields_lambda(f): v for f, v in settings_dict.iteritems()}
+        settings_dict = { convert_fields_lambda(f): v for f, v in settings_dict.items()}
 
     if convert_values_lambda:
-        settings_dict = { f: convert_values_lambda(v) for f, v in settings_dict.iteritems()}
+        settings_dict = { f: convert_values_lambda(v) for f, v in settings_dict.items()}
 
     if convert_to_js:
         # Wrap string values in ""
-        settings_dict.update({f: str('"' + v + '"') for f, v in settings_dict.iteritems() if isinstance(v, basestring)})
+        settings_dict.update({f: str('"' + v + '"') for f, v in settings_dict.items() if isinstance(v, string_types)})
         # Convert Bool values to javascript lowercase
-        settings_dict.update({f: str(v).lower() for f, v in settings_dict.iteritems() if isinstance(v, bool)})
+        settings_dict.update({f: str(v).lower() for f, v in settings_dict.items() if isinstance(v, bool)})
 
     return settings_dict
 

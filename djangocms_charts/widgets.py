@@ -44,7 +44,7 @@ class InputTableWidget(Textarea):
         }
         return mark_safe(render_to_string('djangocms_charts/widgets/input-table.html', context))
 
-    def render(self, name, value, attrs=None):
+    def render(self, name, value, attrs=None, **kwargs):
         return self.render_textarea(name, value, attrs) + \
             self.render_additions(name, value, attrs)
 

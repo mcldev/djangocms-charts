@@ -1,4 +1,3 @@
-import json
 from djangocms_charts.base.views.chart_view import BaseChartView
 from djangocms_charts.chartjs.consts import *
 

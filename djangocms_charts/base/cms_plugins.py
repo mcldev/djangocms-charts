@@ -45,7 +45,7 @@ class ChartsBasePlugin(CMSPluginBase):
         # Get data in correct format for javascript chart
         try:
             data = self.get_data(instance)
-        except Exception, err:
+        except Exception as err:
             error = str(err)
 
         context.update({
