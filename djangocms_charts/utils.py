@@ -9,7 +9,7 @@ def transpose(the_array):
 
 def get_fields_from_obj(obj, filter_fields_lambda=None):
     # Get all field names
-    field_names = obj._meta.get_all_field_names()
+    field_names = [f.name for f in obj._meta.get_fields()]
 
     # Filter settings if provided
     if filter_fields_lambda:
