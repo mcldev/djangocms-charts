@@ -64,26 +64,26 @@ class ChartJsLinePlugin(ChartJsBasePlugin):
     name = _('Line Chart')
 
 
-class ChartJsBarPlugin(ChartJsBasePlugin):
-    model = ChartJsBarModel
-    name = _('Bar Chart')
-
-
-class ChartJsRadarPlugin(ChartJsBasePlugin):
-    model = ChartJsRadarModel
-    name = _('Radar Chart')
-
-
-class ChartJsPolarPlugin(ChartJsBasePlugin):
-    model = ChartJsPolarModel
-    name = _('Polar Area Chart')
-
-
-class ChartJsPiePlugin(ChartJsBasePlugin):
-    model = ChartJsPieModel
-    name = _('Pie Chart')
-
-
-class ChartJsDoughnutPlugin(ChartJsBasePlugin):
-    model = ChartJsDoughnutModel
-    name = _('Doughnut Chart')
+# class ChartJsRadarPlugin(ChartJsBasePlugin):
+#     model = ChartJsRadarModel
+#     name = _('Radar Chart')
+#
+#
+# class ChartJsBarPlugin(ChartJsBasePlugin):
+#     model = ChartJsBarModel
+#     name = _('Bar Chart')
+#
+#
+# class ChartJsPolarPlugin(ChartJsBasePlugin):
+#     model = ChartJsPolarModel
+#     name = _('Polar Area Chart')
+#
+#
+# class ChartJsPiePlugin(ChartJsBasePlugin):
+#     model = ChartJsPieModel
+#     name = _('Pie Chart')
+#
+#
+# class ChartJsDoughnutPlugin(ChartJsBasePlugin):
+#     model = ChartJsDoughnutModel
+#     name = _('Doughnut Chart')
