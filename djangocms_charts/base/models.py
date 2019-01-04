@@ -2,7 +2,7 @@ import re
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
 from cms.models import CMSPlugin
-import consts
+from .consts import *
 
 def get_chart_class():
     return ChartsBaseModel.get_class_string()
@@ -78,8 +78,8 @@ class ChartsBaseModel(CMSPlugin):
         return self.legend_position_in_top_bottom()
 
     def legend_position_in_top_bottom(self):
-        top_bottom_positions = [consts.LEGEND_POSITIONS.BOTTOM, consts.LEGEND_POSITIONS.TOP]
-        top_bottom_labels = [consts.get_legend_class(pos) for pos in top_bottom_positions]
+        top_bottom_positions = [LEGEND_POSITIONS.BOTTOM, LEGEND_POSITIONS.TOP]
+        top_bottom_labels = [get_legend_class(pos) for pos in top_bottom_positions]
         return self.legend_position in top_bottom_labels
 
 
