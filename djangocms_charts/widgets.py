@@ -6,7 +6,7 @@ from django.template.loader import render_to_string
 from django.utils.safestring import mark_safe
 from django.utils.translation.trans_real import get_language
 
-from chartjs.consts import CHART_TYPES
+from djangocms_charts.chartjs.consts import CHART_TYPES
 
 
 class InputTableWidget(Textarea):
