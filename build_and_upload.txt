@@ -1,11 +1,17 @@
 # Using Python 3
 # https://packaging.python.org/tutorials/packaging-projects/
 
-# Build the dist
-py -3 setup.py sdist bdist_wheel
+#Install Wheel & Setup tools first
+pip install wheel --upgrade
+pip install setuptools --upgrade
 
 # Install/upgrade twine
 pip install --upgrade twine
+
+# Build the dist
+py -3 setup.py sdist bdist_wheel
+OR
+python setup.py sdist bdist_wheel
 
 # Test upload and install
 py -3 -m twine upload --repository-url https://test.pypi.org/legacy/ dist/*
@@ -14,3 +20,5 @@ py -3 -m twine upload --repository-url https://test.pypi.org/legacy/ dist/*
 
 # Upload to Pypi
 py -3 -m twine upload dist/*
+or
+python -m twine upload dist/*
