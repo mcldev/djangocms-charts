@@ -56,7 +56,7 @@ class BaseChartView(JSONView):
 
     # Get the data excluding labels on top/left if set - convert all values to float!~
     def get_data(self):
-        get_data = [map(float, self.data[i][self._col_start():]) for i in range(self._row_start(), len(self.data))]
+        get_data = [list(map(float, self.data[i][self._col_start():])) for i in range(self._row_start(), len(self.data))]
         return get_data
 
     # Data is already transposed so Labels are always at the top

@@ -9,7 +9,7 @@ os.chdir(os.path.normpath(os.path.join(os.path.abspath(__file__), os.pardir)))
 
 setup(
     name='djangocms_charts',
-    version='1.2.1',
+    version='1.2.2',
     packages=find_packages(),
     include_package_data=True,
     license='MIT License',
@@ -17,14 +17,12 @@ setup(
     long_description=README,
     url='https://github.com/mcldev/djangocms-charts',
     author='Michael Carder Ltd',
-    author_email='codetoolbox@michaelcarder.co.uk',
     classifiers=[
         'Environment :: Web Environment',
         'Intended Audience :: Developers',
         'License :: OSI Approved :: MIT License',
         'Operating System :: OS Independent',
         'Framework :: Django',
-        'Framework :: Django :: 1.8',
         'Framework :: Django :: 1.11',
         'Programming Language :: Python',
         'Programming Language :: Python :: 2.7',

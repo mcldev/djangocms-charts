@@ -59,7 +59,7 @@ class ChartsBaseInputForm(ModelForm):
                     data_check_cols.append(col)
             data_check_cols = transpose(data_check_cols)
 
-            return json.dumps(data_check_cols)
+            return json.dumps(list(data_check_cols))
 
 
     # Add the cleaned csv data to the table

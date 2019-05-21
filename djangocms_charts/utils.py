@@ -4,6 +4,7 @@ from six import string_types
 
 def transpose(the_array):
     ret = map(list, zip(*the_array))
+    ret = list(ret)
     return ret
 
 
