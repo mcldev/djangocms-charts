@@ -15,7 +15,6 @@ class InputTableWidget(Textarea):
 
     class Media:
         js = (
-                'djangocms_charts/ext-input/js/jquery.min.js',
                 'djangocms_charts/ext-input/js/handsontable.full.js',
                 'djangocms_charts/ext-input/js/jquery.contextMenu.js',
                 'djangocms_charts/ext-input/js/jquery-ui.position.js',

@@ -41,7 +41,6 @@
     {% endspaceless %}
 
     {# Add required scripts and custom function to build chart - one line each for Sekizai to skip duplicates #}
-    {%  addtoblock "js" %}<script src="{% static 'djangocms_charts/ext-render/jquery/2.2.1/jquery.min.js' %}"></script>{% endaddtoblock %}
     {%  addtoblock "js" %}<script src="{% static 'djangocms_charts/ext-render/Chart.js/1.0.2/Chart.js' %}"></script>{% endaddtoblock %}
     {%  addtoblock "js" %}<script src="{% static 'djangocms_charts/ext-render/chartjs-sass/js/chartjs-sass.js' %}"></script>{% endaddtoblock %}
 

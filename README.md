@@ -2,7 +2,7 @@
 DjangoCMS_Charts
 ================
 
-A plugin for DjangoCMS that creates easy to use and fully customisable ChartJs charts - with a table and csv upload interface.
+A plugin for DjangoCMS that creates easy to use and fully customisable ChartJs (ver 1.0.2) charts - with a table and csv upload interface.
 
 Quick start
 ===========
@@ -15,7 +15,9 @@ Quick start
 
 2. Run `python manage.py migrate` to create the djangocms_charts models.
 
-3. Add a DjangoCMS Chart object to your web page!
+3. Ensure you have your own version of jQuery added to block 'js'. See here: https://django-sekizai.readthedocs.io/en/latest/#example
+
+4. Add a DjangoCMS Chart object to your web page!
 
 ChartJs
 =======
