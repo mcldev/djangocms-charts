@@ -1,4 +1,4 @@
-# -*- coding: utf-8 -*-
+
 """Tools to build Line charts parameters."""
 from .chart_views import ChartJsView
 from djangocms_charts.chartjs.consts import *

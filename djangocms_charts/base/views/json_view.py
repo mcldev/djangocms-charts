@@ -1,4 +1,4 @@
-# -*- coding: utf-8 -*-
+
 
 #From ChartJs for Django
 
