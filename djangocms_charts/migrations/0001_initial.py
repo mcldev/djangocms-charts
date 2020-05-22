@@ -1,5 +1,5 @@
-# -*- coding: utf-8 -*-
-from __future__ import unicode_literals
+
+
 
 from django.db import migrations, models
 import djangocms_charts.base.models
@@ -16,7 +16,7 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='ChartJsBarModel',
             fields=[
-                ('cmsplugin_ptr', models.OneToOneField(parent_link=True, auto_created=True, primary_key=True, serialize=False, to='cms.CMSPlugin')),
+                ('cmsplugin_ptr', models.OneToOneField(on_delete=models.CASCADE, parent_link=True, auto_created=True, primary_key=True, serialize=False, to='cms.CMSPlugin')),
                 ('name', models.CharField(max_length=256, verbose_name='Name')),
                 ('table_data', models.TextField(verbose_name='Chart Table data', blank=True)),
                 ('labels_top', models.BooleanField(default=True, help_text=b'here is some help', verbose_name='Labels top row')),
@@ -51,7 +51,7 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='ChartJsDoughnutModel',
             fields=[
-                ('cmsplugin_ptr', models.OneToOneField(parent_link=True, auto_created=True, primary_key=True, serialize=False, to='cms.CMSPlugin')),
+                ('cmsplugin_ptr', models.OneToOneField(on_delete=models.CASCADE, parent_link=True, auto_created=True, primary_key=True, serialize=False, to='cms.CMSPlugin')),
                 ('name', models.CharField(max_length=256, verbose_name='Name')),
                 ('table_data', models.TextField(verbose_name='Chart Table data', blank=True)),
                 ('labels_top', models.BooleanField(default=True, help_text=b'here is some help', verbose_name='Labels top row')),
@@ -124,7 +124,7 @@ class Migration(migrations.Migration):
                 ('tooltipXOffset', models.IntegerField(default=10, null=True, verbose_name='Pixel offset from point x to tooltip edge', blank=True)),
                 ('tooltipTemplate', models.CharField(max_length=300, verbose_name='Template string for single tooltips', blank=True)),
                 ('multiTooltipTemplate', models.CharField(default='<%= value %>', max_length=300, verbose_name='Template string for multiple tooltips', blank=True)),
-                ('site', models.ForeignKey(to='sites.Site')),
+                ('site', models.ForeignKey(on_delete=models.CASCADE, to='sites.Site')),
             ],
             options={
                 'ordering': ['name'],
@@ -135,7 +135,7 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='ChartJsLineModel',
             fields=[
-                ('cmsplugin_ptr', models.OneToOneField(parent_link=True, auto_created=True, primary_key=True, serialize=False, to='cms.CMSPlugin')),
+                ('cmsplugin_ptr', models.OneToOneField(on_delete=models.CASCADE, parent_link=True, auto_created=True, primary_key=True, serialize=False, to='cms.CMSPlugin')),
                 ('name', models.CharField(max_length=256, verbose_name='Name')),
                 ('table_data', models.TextField(verbose_name='Chart Table data', blank=True)),
                 ('labels_top', models.BooleanField(default=True, help_text=b'here is some help', verbose_name='Labels top row')),
@@ -174,7 +174,7 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='ChartJsPieModel',
             fields=[
-                ('cmsplugin_ptr', models.OneToOneField(parent_link=True, auto_created=True, primary_key=True, serialize=False, to='cms.CMSPlugin')),
+                ('cmsplugin_ptr', models.OneToOneField(on_delete=models.CASCADE, parent_link=True, auto_created=True, primary_key=True, serialize=False, to='cms.CMSPlugin')),
                 ('name', models.CharField(max_length=256, verbose_name='Name')),
                 ('table_data', models.TextField(verbose_name='Chart Table data', blank=True)),
                 ('labels_top', models.BooleanField(default=True, help_text=b'here is some help', verbose_name='Labels top row')),
@@ -207,7 +207,7 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='ChartJsPolarModel',
             fields=[
-                ('cmsplugin_ptr', models.OneToOneField(parent_link=True, auto_created=True, primary_key=True, serialize=False, to='cms.CMSPlugin')),
+                ('cmsplugin_ptr', models.OneToOneField(on_delete=models.CASCADE, parent_link=True, auto_created=True, primary_key=True, serialize=False, to='cms.CMSPlugin')),
                 ('name', models.CharField(max_length=256, verbose_name='Name')),
                 ('table_data', models.TextField(verbose_name='Chart Table data', blank=True)),
                 ('labels_top', models.BooleanField(default=True, help_text=b'here is some help', verbose_name='Labels top row')),
@@ -245,7 +245,7 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='ChartJsRadarModel',
             fields=[
-                ('cmsplugin_ptr', models.OneToOneField(parent_link=True, auto_created=True, primary_key=True, serialize=False, to='cms.CMSPlugin')),
+                ('cmsplugin_ptr', models.OneToOneField(on_delete=models.CASCADE, parent_link=True, auto_created=True, primary_key=True, serialize=False, to='cms.CMSPlugin')),
                 ('name', models.CharField(max_length=256, verbose_name='Name')),
                 ('table_data', models.TextField(verbose_name='Chart Table data', blank=True)),
                 ('labels_top', models.BooleanField(default=True, help_text=b'here is some help', verbose_name='Labels top row')),
