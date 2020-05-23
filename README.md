@@ -1,6 +1,9 @@
-================
 DjangoCMS_Charts
 ================
+
+
+[![PyPI version](https://badge.fury.io/py/djangocms-charts.svg)](https://badge.fury.io/py/djangocms-charts)
+[![PyPi downloads](https://pypip.in/d/djangocms-charts/badge.png)](https://crate.io/packages/djangocms-charts/)
 
 A plugin for DjangoCMS that creates easy to use and fully customisable ChartJs (ver 1.0.2) charts - with a table and csv upload interface.
 
