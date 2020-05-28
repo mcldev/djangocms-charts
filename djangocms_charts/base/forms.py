@@ -1,4 +1,5 @@
 import csv
+import io
 
 from django import forms
 from django.forms.models import ModelForm
@@ -65,7 +66,9 @@ class ChartsBaseInputForm(ModelForm):
     # Add the cleaned csv data to the table
     def clean_csv_upload(self):
         if self.cleaned_data['csv_upload']:
-            csv_reader = csv.reader(self.cleaned_data['csv_upload'], dialect='excel')
+            encoding = self.cleaned_data['csv_upload'].charset if self.cleaned_data['csv_upload'].charset else 'utf-8-sig'
+            f = io.TextIOWrapper(self.cleaned_data['csv_upload'].file, encoding=encoding)
+            csv_reader = csv.reader(f, dialect='excel')
             data = []
             for row in csv_reader:
                 data.append(row)
