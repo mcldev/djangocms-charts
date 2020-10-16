@@ -6,25 +6,23 @@ from django.template.loader import render_to_string
 from django.utils.safestring import mark_safe
 from django.utils.translation.trans_real import get_language
 
-from djangocms_charts.chartjs.consts import CHART_TYPES
+from .consts import CHART_TYPES
 
 
 class InputTableWidget(Textarea):
 
-    chart_type = None
-
     class Media:
         js = (
-                'djangocms_charts/ext-input/js/handsontable.full.js',
-                'djangocms_charts/ext-input/js/jquery.contextMenu.js',
-                'djangocms_charts/ext-input/js/jquery-ui.position.js',
-                'djangocms_charts/ext-input/js/json2.js',
-                'djangocms_charts/ext-input/js/bootstrap3-typeahead.js',
+                'djangocms_charts/input/js/handsontable.full.js',
+                'djangocms_charts/input/js/jquery.contextMenu.js',
+                'djangocms_charts/input/js/jquery-ui.position.js',
+                'djangocms_charts/input/js/json2.js',
+                'djangocms_charts/input/js/bootstrap3-typeahead.js',
             )
         css = {
             'all': (
-                'djangocms_charts/ext-input/css/handsontable.full.modified.css',
-                'djangocms_charts/ext-input/css/jquery.contextMenu.css',
+                'djangocms_charts/input/css/handsontable.full.modified.css',
+                'djangocms_charts/input/css/jquery.contextMenu.css',
                 ),
         }
 
@@ -37,9 +35,7 @@ class InputTableWidget(Textarea):
             'name': name,
             'language': language,
             'data': value,
-            'chart_type': self.chart_type,
             'STATIC_URL': settings.STATIC_URL,
-            'LABEL_VALUE_CHART_TYPES': json.dumps(CHART_TYPES.get_label_value_types)
         }
         return mark_safe(render_to_string('djangocms_charts/widgets/input-table.html', context))
 

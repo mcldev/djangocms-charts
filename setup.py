@@ -9,7 +9,7 @@ os.chdir(os.path.normpath(os.path.join(os.path.abspath(__file__), os.pardir)))
 
 setup(
     name='djangocms_charts',
-    version='2.0.0',
+    version='3.0.0',
     packages=find_packages(),
     include_package_data=True,
     license='MIT License',
@@ -24,7 +24,6 @@ setup(
         'License :: OSI Approved :: MIT License',
         'Operating System :: OS Independent',
         'Framework :: Django',
-        'Framework :: Django :: 1.11',
         'Framework :: Django :: 2.2',
         'Programming Language :: Python :: 3',
         'Programming Language :: Python :: 3.4',
@@ -37,8 +36,10 @@ setup(
     ],
     install_requires=[
         'six',
-        'django>=1.11',
+        'django>=2.2',
         'django-cms>=3.4',
+        'django-colorfield',
+        'django-select2',
     ],
     package_data={
         'readme': ['README.rst'],
