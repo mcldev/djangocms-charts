@@ -26,17 +26,16 @@ class CHART_TYPES:
                    (BUBBLE, BUBBLE),
                    (SCATTER, SCATTER),)
 
+
 AXIS_TYPES = [('linear', 'linear'),
               ('logarithmic', 'logarithmic'),
               ('category', 'category'),
               ('time', 'time'),
               ('radial', 'radial'), ]
 
-
 AXIS_DISPLAY = [('true', 'true'),
               ('false', 'false'),
               ('auto', 'auto'), ]
-
 
 DATASET_FORMATS = [('rows', 'rows'),
                    ('cols', 'cols'),]
@@ -48,6 +47,20 @@ OPTION_DATA_TYPES = [('text', 'text'),
                      ('array', 'array'),
                      ('function', 'function')]
 
+COLOR_LABELS = [('backgroundColor', 'backgroundColor'),
+                     ('borderColor', 'borderColor'),
+                     ('hoverBackgroundColor', 'hoverBackgroundColor'),
+                     ('hoverBorderColor', 'hoverBorderColor'),
+                     ('pointBackgroundColor', 'pointBackgroundColor'),
+                     ('pointBorderColor', 'pointBorderColor'),
+                     ('pointHoverBackgroundColor', 'pointHoverBackgroundColor'),
+                     ('pointHoverBorderColor', 'pointHoverBorderColor')]
+
+# -------------------------------
+
+# Options
+
+# -------------------------------
 
 CHARTJS_GLOBAL_OPTIONS_LOOKUP = {
     "Chart.defaults.bar": [
@@ -563,6 +576,7 @@ CHARTJS_AXIS_OPTIONS = {
         'offset',
         'position',
         'scaleLabel',
+        'stacked',
         'type',
     ], 'angleLines': [
         'angleLines.display',

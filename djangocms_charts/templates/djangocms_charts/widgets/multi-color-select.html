@@ -1,0 +1,28 @@
+{% load sekizai_tags %}
+
+{# Multiple Colour widget #}
+<div class="multiple-color-widget">
+    {# Default Django input field #}
+    <input type="text"
+           class="mutiple-color-input"
+           id="{{ widget.attrs.id }}"
+           name="{{ widget.name }}"
+           value="{% firstof widget.value widget.attrs.default '' %}"
+           placeholder="{% firstof widget.attrs.default '' %}"
+           style="width: 100%!important;"
+           {% if widget.attrs.required %}required{% endif %}/>
+
+    {# Color Select List and Add Button  #}
+    <ul class="multiple-color-list">
+    </ul>
+    <button class="btn btn-default multiple-color-add-button" role="button">Add new color</button>
+
+    {# Template used to add new colors   #}
+    <template class="multiple-color-template">
+        <li class="input-group">
+            <input class="multiple-color-input" type="color" style="width: 75px!important;">
+            <button class="multiple-color-remove-button">&times;</button>
+        </li>
+    </template>
+</div>
+

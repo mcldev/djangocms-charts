@@ -1,7 +1,8 @@
 from adminsortable2.admin import SortableInlineAdminMixin
 from django.contrib import admin
 
-from .forms import GlobalOptionsInlineForm, ChartOptionsInlineForm, DatasetOptionsInlineForm, AxisOptionsInlineForm
+from .forms import GlobalOptionsInlineForm, ChartOptionsInlineForm, DatasetOptionsInlineForm, AxisOptionsInlineForm, \
+    ColorInputForm
 from .models import GlobalOptionsGroupModel, GlobalOptionsModel, \
     ChartOptionsGroupModel, ChartOptionsModel,\
     DatasetOptionsGroupModel, DatasetOptionsModel, \
@@ -10,7 +11,7 @@ from .models import GlobalOptionsGroupModel, GlobalOptionsModel, \
 
 # Inline Forms for Options
 # ------------------------
-from .models_axes import AxisModel
+from .models_colors import ColorModel, ColorGroupModel
 
 
 class OptionsInlineBase(admin.TabularInline):
@@ -40,14 +41,14 @@ class AxisOptionsInlineAdmin(OptionsInlineBase):
 # ------------------------
 @admin.register(GlobalOptionsGroupModel)
 class GlobalOptionsAdmin(admin.ModelAdmin):
-    fields = ['name', 'enabled', 'site' ]
+    fields = ['name', 'enabled', 'site', 'colors']
     list_display = ('name', 'enabled')
     inlines = [
         GlobalOptionsInlineAdmin,
     ]
 
 @admin.register(ChartOptionsGroupModel)
-class DatasetOptionsAdmin(admin.ModelAdmin):
+class ChartsOptionsAdmin(admin.ModelAdmin):
     fields = ['name', ]
     list_display = ('name',)
     inlines = [
@@ -64,16 +65,27 @@ class DatasetOptionsAdmin(admin.ModelAdmin):
 
 @admin.register(AxisOptionsGroupModel)
 class AxisOptionsAdmin(admin.ModelAdmin):
-    fields = ['name', ]
-    list_display = ('name',)
+    fields = ['name', 'slug', 'type', 'display', 'weight']
+    readonly_fields = ['slug']
+    list_display = ('name', 'type')
     inlines = [
         AxisOptionsInlineAdmin,
     ]
 
-# Register Axes
+# Register Colour Admins
 # ------------------------
-@admin.register(AxisModel)
-class AxisAdmin(admin.ModelAdmin):
-    fields = ['label', 'slug', 'type', 'display', 'weight', 'options']
-    readonly_fields = ['slug']
-    list_display = ('label',)
+class ColorsInline(admin.TabularInline):
+    fields = ['types', 'labels', 'colors']
+    list_display = ['types', 'labels', 'colors']
+    extra = 0
+    model = ColorModel
+    form = ColorInputForm
+
+
+@admin.register(ColorGroupModel)
+class ColorGroupAdmin(admin.ModelAdmin):
+    fields = ['name']
+    list_display = ('name',)
+    inlines = [
+        ColorsInline,
+    ]

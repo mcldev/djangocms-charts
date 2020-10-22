@@ -35,10 +35,8 @@ setup(
         'Topic :: Internet :: WWW/HTTP :: Dynamic Content',
     ],
     install_requires=[
-        'six',
         'django>=2.2',
         'django-cms>=3.4',
-        'django-colorfield',
         'django-select2',
     ],
     package_data={

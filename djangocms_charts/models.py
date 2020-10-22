@@ -1,13 +1,13 @@
 from cms.models import CMSPlugin
-from django.conf import settings
-from django.contrib.sites.models import Site
-from django.db import models
+
 from django.template.defaultfilters import slugify
 from django.utils.translation import ugettext_lazy as _
 
 from .models_datasets import DatasetBase
 from .models_options import *
-from .models_axes import AxisModel
+from .utils import get_unique_list
+from .models_axes import AxisOptionsGroupModel, AxisOptionsModel
+from .models_colors import ColorGroupModel, ColorModel
 
 import djangocms_charts.cache as charts_cache
 
@@ -16,7 +16,9 @@ import djangocms_charts.cache as charts_cache
 # Main Chart Model
 
 # --------------------------------------
-class ChartModel(DatasetBase, CMSPlugin):
+
+
+class ChartModel(CMSPlugin, DatasetBase):
     """
     Charts Model
     """
@@ -54,7 +56,7 @@ class ChartModel(DatasetBase, CMSPlugin):
         else:
             return self.chart_height
         
-    def get_chart_as_dict(self):
+    def get_chart_as_dict(self, site_id=None):
 
         # Get Cached
         # -------------------
@@ -76,27 +78,40 @@ class ChartModel(DatasetBase, CMSPlugin):
         if self.chart_options:
             chart_options = self.chart_options.get_as_dict().get('options', None)
 
-        # Append Child datasets
+        # Append Child datasets and axes
         # -------------------
         for other_dataset in child_datasets:
-            _datasets, _x_labels, _x_axes, _y_axes = other_dataset.get_as_dict()
-            datasets = _datasets + datasets
-            if not any(x_labels):
-                x_labels = _x_labels
-            x_axes += _x_axes
-            y_axes += _y_axes
+            _datasets, _x_labels, _x_axis, _y_axis = other_dataset.get_as_dict()
+            datasets += _datasets      # Append datasets so last is printed last
+            if not x_labels:
+                x_labels = _x_labels   # If no labels already specified, use first available
+            x_axes += _x_axis
+            y_axes += _y_axis
+
+        # Remove multiple references to same axes
+        # -----------------------------------
+        x_axes = get_unique_list(x_axes)
+        y_axes = get_unique_list(y_axes)
 
         # Add common data to final Dictionary
         # -----------------------------------
         chart_dict = {}
         chart_dict['type'] = self.chart_type
 
-        # Append Datasets
+        # Apply Chart colors indexed by dataset
+        # -----------------------------------
+        # Chart Colors
+        self.apply_colors(datasets)
+        # Global Colors
+        global_colors = GlobalOptionsGroupModel.get_global_colors(site_id)
+        if global_colors:
+            self.apply_colors(datasets, global_colors)
+        # Append Dataset
         chart_dict['data'] = {'datasets': datasets}
 
         # Get X Labels
         # -------------------
-        if any(x_labels):
+        if x_labels:
             chart_dict['data']['labels'] = x_labels
 
         # Get Options Dictionary

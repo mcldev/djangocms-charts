@@ -11,7 +11,7 @@ from djangocms_charts.models import ChartModel, GlobalOptionsGroupModel
 def get_chart_as_json(request, chart_id):
     chart_obj = get_object_or_404(ChartModel, id=chart_id)
 
-    # Get the CMSPlugins of Dataset Children if any
+    # Get the CMSPlugins of any Child Datasets
     qs = get_cmsplugin_queryset()
     qs = qs.filter(Q(parent_id=chart_id))
 

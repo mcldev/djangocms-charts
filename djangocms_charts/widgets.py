@@ -1,12 +1,9 @@
-import json
-
 from django.conf import settings
 from django.forms import Textarea
 from django.template.loader import render_to_string
 from django.utils.safestring import mark_safe
 from django.utils.translation.trans_real import get_language
 
-from .consts import CHART_TYPES
 
 
 class InputTableWidget(Textarea):
@@ -43,3 +40,13 @@ class InputTableWidget(Textarea):
         return self.render_textarea(name, value, attrs) + \
             self.render_additions(name, value, attrs)
 
+
+class MultiColorSelectWidget(Textarea):
+
+    template_name = 'djangocms_charts/widgets/multi-color-select.html'
+
+    class Media:
+        js = (
+            'djangocms_charts/input/js/html5sortable.min.js',
+            'djangocms_charts/input/custom/multi-color-select.js',
+        )

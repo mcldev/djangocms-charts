@@ -20,14 +20,27 @@
 
     //Get the data as a two columns or full data
     //*******************************************
-    function array_get_cols(the_data, num_cols) {
+    function array_resize(the_data, num_cols=0, num_rows=0) {
         if(!the_data) return;
-        num_cols = num_cols ? num_cols : the_data[0].length;
-        add_cols = Math.max(0, num_cols - the_data[0].length);
-        append_arr = new Array(add_cols);
-        return the_data.map(function (the_row) {
-            return the_row.slice(0, num_cols).concat(append_arr);
-        });
+        //Get number of cols, less than current gets reduced, more get's a blank array concatenated
+        if(num_cols > 0) {
+            num_cols = num_cols ? num_cols : the_data[0].length;
+            add_cols = Math.max(0, num_cols - the_data[0].length);
+            append_cols = new Array(add_cols);
+            the_data = the_data.map(function (the_row) {
+                return the_row.slice(0, num_cols).concat(append_cols);
+            });
+        }
+        if(num_rows > 0){
+            num_rows = num_rows ? num_rows : the_data.length;
+            add_rows = Math.max(0, num_rows - the_data.length);
+            if (add_rows > 0) {
+                append_rows = new Array(add_rows).map(() => new Array(the_data[0].length));
+                the_data = the_data.concat(append_rows);
+            }
+            the_data = the_data.slice(0, num_rows);
+        }
+        return the_data;
     }
 
     //Get the options based on Chart Type
@@ -45,7 +58,7 @@
             minCols: 1,
             manualColumnResize: true,
 
-            // On Change write the data to temp area as json
+            // On Change write the data as json
             // ---------------------------
             afterChange: function (change, source) {
                 change_function();
@@ -93,7 +106,7 @@
                     required_labels.unshift("");
                     rows_cols_required += 1;
                 }
-                options['data'] = array_get_cols(table_data, rows_cols_required);
+                options['data'] = array_resize(table_data, rows_cols_required);
                 options['colHeaders'] = required_labels;
                 options['rowHeaders'] = true;
                 options['startCols'] = rows_cols_required;
@@ -103,7 +116,7 @@
                     required_labels.unshift("");
                     rows_cols_required += 1;
                 }
-                options['data'] = table_data.slice(0, rows_cols_required);
+                options['data'] = array_resize(table_data, 0, rows_cols_required);
                 options['rowHeaders'] = required_labels;
                 options['colHeaders'] = true;
                 options['startRows'] = rows_cols_required;

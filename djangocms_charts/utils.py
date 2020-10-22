@@ -1,6 +1,4 @@
-from django.forms.models import model_to_dict
-from django.db.models import Q
-from six import string_types
+
 
 def transpose(the_array):
     ret = map(list, zip(*the_array))
@@ -8,65 +6,22 @@ def transpose(the_array):
     return ret
 
 
-# def get_fields_from_obj(obj, filter_fields_lambda=None):
-#     # Get all field names
-#     field_names = [f.name for f in obj._meta.get_fields()]
-#
-#     # Filter settings if provided
-#     if filter_fields_lambda:
-#         field_names = {f for f in field_names if filter_fields_lambda(f)}
-#
-#     field_names = tuple(field_names)
-#
-#     return field_names
-#
-#
-# def get_fields_and_values_from_obj(class_obj, obj_query, filter_fields_lambda=None, filter_values_lambda=None,
-#                                     convert_fields_lambda = None, convert_values_lambda = None,
-#                                     skip_blanks=True, enable_field=None, convert_to_js= True):
-#     # Get Chart Data
-#     try:
-#         settings_obj = class_obj.objects.get(obj_query)
-#     except class_obj.DoesNotExist:
-#         return None
-#
-#     return get_fields_and_values_from_instance(settings_obj, filter_fields_lambda, filter_values_lambda,
-#                                                convert_fields_lambda, convert_values_lambda,
-#                                                 skip_blanks, enable_field, convert_to_js)
-#
-#
-# def get_fields_and_values_from_instance(instance, filter_fields_lambda=None, filter_values_lambda=None,
-#                                         convert_fields_lambda = None, convert_values_lambda = None,
-#                                         skip_blanks=True, enable_field=None, convert_to_js= True):
-#
-#     if enable_field != None:
-#         if not getattr(instance, enable_field) :
-#             return None
-#
-#     settings_dict = model_to_dict(instance)
-#
-#     # Remove blank values
-#     if skip_blanks:
-#         settings_dict = {f: v for f, v in settings_dict.items() if v is not None and v != ""}
-#
-#     # Filter settings if provided
-#     if filter_fields_lambda:
-#         settings_dict = {f: v for f, v in settings_dict.items() if filter_fields_lambda(f)}
-#
-#     if filter_values_lambda:
-#         settings_dict = {f: v for f, v in settings_dict.items() if filter_values_lambda(v)}
-#
-#     if convert_fields_lambda:
-#         settings_dict = { convert_fields_lambda(f): v for f, v in settings_dict.items()}
-#
-#     if convert_values_lambda:
-#         settings_dict = { f: convert_values_lambda(v) for f, v in settings_dict.items()}
-#
-#     if convert_to_js:
-#         # Wrap string values in ""
-#         settings_dict.update({f: str('"' + v + '"') for f, v in settings_dict.items() if isinstance(v, string_types)})
-#         # Convert Bool values to javascript lowercase
-#         settings_dict.update({f: str(v).lower() for f, v in settings_dict.items() if isinstance(v, bool)})
-#
-#     return settings_dict
+def get_unique_list(dict_list, key="id"):
+    # https://stackoverflow.com/questions/10024646/how-to-get-list-of-objects-with-unique-attribute
+    seen = set()
+    return [seen.add(d[key]) or d for d in dict_list if d and d[key] not in seen]
 
+
+def color_variants(hex_colors, brightness_offset=1):
+    return [color_variant(c, brightness_offset) for c in hex_colors]
+
+def color_variant(hex_color, brightness_offset=1):
+    """ takes a color like #87c95f and produces a lighter or darker variant """
+    # https://chase-seibert.github.io/blog/2011/07/29/python-calculate-lighterdarker-rgb-colors.html
+    if len(hex_color) != 7:
+        raise Exception("Passed %s into color_variant(), needs to be in #87c95f format." % hex_color)
+    rgb_hex = [hex_color[x:x+2] for x in [1, 3, 5]]
+    new_rgb_int = [int(hex_value, 16) + brightness_offset for hex_value in rgb_hex]
+    new_rgb_int = [min([255, max([0, i])]) for i in new_rgb_int] # make sure new values are between 0 and 255
+    # hex() produces "0x88", we want just "88"
+    return "#" + "".join([hex(i)[2:] for i in new_rgb_int])

@@ -27,12 +27,19 @@ class DatasetBase(models.Model):
                                           default='rows', choices=DATASET_FORMATS)
 
     # Set Options and Axes
+    color_by_dataset = models.BooleanField(_('Color by Dataset'), blank=True, null=True, default=False,
+                                           help_text=_('True to color each Dataset, False to color each element in a Series'))
+    colors = models.ForeignKey('ColorGroupModel', on_delete=models.CASCADE, related_name="%(class)s_colors", blank=True, null=True)
     options = models.ForeignKey('DatasetOptionsGroupModel', on_delete=models.CASCADE, related_name="%(class)s_options", blank=True, null=True)
-    xAxis = models.ForeignKey('AxisModel', on_delete=models.CASCADE, related_name="%(class)s_xAxis", blank=True, null=True)
-    yAxis = models.ForeignKey('AxisModel', on_delete=models.CASCADE, related_name="%(class)s_yAxis", blank=True, null=True)
+    xAxis = models.ForeignKey('AxisOptionsGroupModel', on_delete=models.CASCADE, related_name="%(class)s_xAxis", blank=True, null=True)
+    yAxis = models.ForeignKey('AxisOptionsGroupModel', on_delete=models.CASCADE, related_name="%(class)s_yAxis", blank=True, null=True)
 
     def save(self, *args, **kwargs):
         super().save(*args, **kwargs)
+        charts_cache.clear_all()
+
+    def delete(self, *args, **kwargs):
+        super().delete(*args, **kwargs)
         charts_cache.clear_all()
 
     class Meta:
@@ -45,6 +52,7 @@ class DatasetBase(models.Model):
 
     DEFAULT_SCALAR_AXES = {
         # https://stackoverflow.com/a/57130191/12400711
+        "id": "default_scalar",
         "type": "linear",   # MANDATORY TO SHOW YOUR POINTS! (THIS IS THE IMPORTANT BIT)
         "display": True,    # mandatory
         "position": 'bottom',
@@ -61,12 +69,12 @@ class DatasetBase(models.Model):
         x_labels = self.get_x_labels()
 
         # Get Axes
-        x_axes = [self.xAxis.get_as_dict()] if self.xAxis else []
-        if not x_axes and self.type == CHART_TYPES.LINE_XY:
-            x_axes = [self.DEFAULT_SCALAR_AXES]
-        y_axes = [self.yAxis.get_as_dict()] if self.yAxis else []
+        x_axis = [self.xAxis.get_axis_as_dict('x')] if self.xAxis else []
+        if not x_axis and self.type == CHART_TYPES.LINE_XY:
+            x_axis = [self.DEFAULT_SCALAR_AXES]
+        y_axis = [self.yAxis.get_axis_as_dict('y')] if self.yAxis else []
 
-        return datasets, x_labels, x_axes, y_axes
+        return datasets, x_labels, x_axis, y_axis
 
 
     # DATA FORMATS:
@@ -253,7 +261,32 @@ class DatasetBase(models.Model):
         # Get the X Axes Labels or Categories
         if self._has_x_labels:
             return self._table_data[0][self._has_data_labels:]
+        return []
 
+    def apply_colors(self, datasets, color_dict=None):
+        # Get or provide a color dictionary
+        if color_dict is None:
+            if self.colors:
+                color_dict = self.colors.get_as_dict()
+            else:
+                return
+        # For each dataset, either append the array of colors, or index by dataset.
+        for i, dataset in enumerate(datasets):
+            chart_type_color_dict = color_dict.get(dataset['type'], None)
+            if not chart_type_color_dict:
+                continue        # No colors for that chart type
+            for namespace_key, color_list in chart_type_color_dict.items():
+                if namespace_key in dataset:
+                    continue    # Color(s) already set for that dataset/type
+                if self.color_by_dataset:
+                    if i < len(color_list):
+                        # Set the color for each Dataset e.g. { 'backgroundColor': '#ff000' ...}
+                        # Do not overwrite if previously set (i.e. 1. Dataset, 2. Chart, 3. Global)
+                        dataset.setdefault(namespace_key, color_list[i])
+                else:
+                    # Provide the whole color list for each dataset by Series
+                    #   e.g. { 'backgroundColor': ['#ff000', '#ff000',...]}
+                    dataset.setdefault(namespace_key, color_list)
 
     # Get Data as List
     def get_datasets(self):
@@ -269,16 +302,20 @@ class DatasetBase(models.Model):
             datasets = self._get_datasets_as_labels_values()
 
         # Append common information
-        for dataset in datasets:
+        for i, dataset in enumerate(datasets):
             # Add dataset type, redundant for main chart
             dataset['type'] = self.chart_type
             # Add dataset options if included
             if self.options:
                 dataset.update(self.options.get_as_dict())
             if self.xAxis:
-                dataset['xAxisID'] = self.xAxis.slug
-            # if self.yAxis:
-            #     dataset['yAxisID'] = self.yAxis.slug
+                dataset['xAxisID'] = self.xAxis.get_axis_id('x')
+            if self.yAxis:
+                dataset['yAxisID'] = self.yAxis.get_axis_id('y')
+
+        # Apply colors indexed by dataset
+        if self.colors:
+            self.apply_colors(datasets)
 
         return datasets
 

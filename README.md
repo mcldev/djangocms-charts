@@ -36,7 +36,7 @@ A plugin for DjangoCMS that creates easy to use and fully customisable ChartJs (
 ## Caching [Optional]
 The queries and building up of each chart can be expensive for many options/data rows/charts etc. 
 To speed this up set up a dedicated DjangoCMS Charts cache.
-This **must be a unique cache** as it will require to be cleared after saving any charts object due to the complex relationship between all objects.
+This **should be a unique cache** as it will require to be cleared after saving any charts object due to the complex relationship between all objects.
 
 1. In `settings.py` add `DJANGOCMS_CHARTS_CACHE = 'djangocms_charts'` which should map to a unique cache.
 
@@ -57,7 +57,7 @@ CACHES = {
 }
 ```
 
-## URLS [optional]
+## URLS [Optional]
 If access to the JSON Vesion of the chart is required add the following to your `urls.py` :
 
 ```
@@ -70,6 +70,13 @@ urlpatterns = [
 The JSON view can then be accessed via:
  - Chart View: `[url]/chartjs/get_chart_as_json/[chart_id]/`
  - Global Options View: `[url]/get_global_options_as_json/[options_id]/`
+
+
+## ChartJs-Sass [Optional]
+All chart dataset colours (backgroundColor, borderColor, etc) can be set using CSS via ChartJS-Sass. This JS library will update any unspecified colors with those specified in the CSS and built using SASS.
+For more details see: https://github.com/mcldev/ChartJS-Sass
+
+1. To enable, in `settings.py` add `DJANGOCMS_CHARTS_ENABLE_CHARTJS_SASS = True` 
 
 
 # Usage
@@ -149,6 +156,51 @@ https://www.chartjs.org/docs/latest/charts/mixed.html
 Each child Dataset can have a different type, thus creating a Mixed Chart. 
 **NB:** Some types do not mix well (Radar/Bar etc) - we make no validation on each possible combination.
 
+## Dataset Colors
+Dataset Color Groups can be specified as a user-friendly list of colors, with a click-and-drag sortable feature.
+
+### Specifying the color group
+Specifications for each group require the following:
+- Type (select multiple types with Ctrl)
+    - the Chart/Dataset type that these colors will be applied to
+- Namespace Labels (select multiple types with Ctrl)
+    - the dataset namespace labels that will use these colors
+    - e.g. `backgroundColor, borderColor, pointBackgroundColor, ...`
+- Colors 
+    - a text list of **hex only** colors
+    - these can be selected/edited/rearranged through the interface
+
+### Application of Color Groups 
+These color groups can then be applied as follows:
+- Globally 
+    - by assigning the color group to the Global Settings
+    - any Chart/Dataset (without colors specified) will use these colors
+- By Chart
+    - all of the Chart datasets and any sub-datasets (without colors specified) will have these colors applied
+- By Dataset
+    - any Dataset can specifically use this Color Group 
+
+### Color By Dataset or Series
+The flag to set 'Color by Dataset' will do the following:
+- Color by Dataset: `True`
+    - Each individual Dataset will use one color from the color array based on its index
+    - e.g. with a color array of `[red, green, blue]`
+    ```
+    #       Jan-20      Feb-20, ...
+    # Label_1   10      20      <- red
+    # Label_2   30      40      <- green
+    # Label_3   50      60      <- blue
+    ```
+- Color by Series: `False`
+    - Each individual Dataset will get the full color array to use for each element in Series
+    - e.g. with a color array of `[red, green, blue]`
+    ```
+    #           Jan-20      Feb-20, ...
+    # Label_1   10  <- red    20      <- green
+    # Label_2   30  <- red    40      <- green
+    # Label_3   50  <- red    60      <- green
+    ```
+
 ## Options
 https://www.chartjs.org/docs/latest/configuration/
 
@@ -187,7 +239,7 @@ DjangoCMS Charts options can be input as any one of the following types:
         - `"\t"`  (tab)
         - `" "`   (space)
     - Sample input: `red blue green`
-    - Sample output: `{"option_name": ["red", "blue", "green"]}`
+    - Sample output: `{"option_name": ["red", "green", "blue"}]`
 - function
     - A js function string that will be cleaned (new lines etc.) and injected into the code.
     - Can be a valid function name or complete function **without comments**
@@ -201,13 +253,9 @@ DjangoCMS Charts options can be input as any one of the following types:
         'green';
     }
     ```
-     
 
 # More details on ChartJs
 http://www.chartjs.org/
  
 ChartJs is a dynamic JS charting application giving users an interactive and visually appealing chart in an html 5 canvas. Each type of chart is available:
 
-
-# ChartJs-Sass
-This is now **DEPRECATED** 

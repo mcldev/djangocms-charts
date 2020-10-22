@@ -2,6 +2,7 @@ from django.conf import settings
 from django.core.cache import cache, InvalidCacheBackendError
 from django.core.cache import caches
 from cms_named_menus.settings import CACHE_DURATION
+import warnings
 
 
 KEY_PREFIX = 'djangocms_charts_'
@@ -13,7 +14,7 @@ def get_charts_cache():
         try:
             charts_cache = caches[djangocms_charts_cache]
             if charts_cache is cache:
-                raise Exception('DjangoCMS Charts - Do not assign charts to the DEFAULT CACHE')
+                warnings.warn('DjangoCMS Charts - Do not assign charts to the DEFAULT CACHE')
             return charts_cache
         except InvalidCacheBackendError:
             return None

@@ -59,7 +59,7 @@ class OptionsBase(models.Model):
         elif val_type == 'function':
             clean = ['\n', '\r', '\t', '  ',]
             for c in clean:
-                val = val.replace(c, '')
+                val = val.replace(c, ' ')
             val = f'FUNC_START:{val}:FUNC_END'
 
         # Dump all values to json
@@ -72,7 +72,6 @@ class OptionsBase(models.Model):
     class Meta:
         ordering = ['label',]
         abstract = True
-
 
 # --------------------------------------
 
@@ -105,6 +104,10 @@ class OptionsGroupBase(models.Model):
         super().save(*args, **kwargs)
         charts_cache.clear_all()
 
+    def delete(self, *args, **kwargs):
+        super().delete(*args, **kwargs)
+        charts_cache.clear_all()
+
     def __str__(self):
         return self.name
 
@@ -119,22 +122,47 @@ class GlobalOptionsGroupModel(OptionsGroupBase):
     # Enable flag to switch global settings on/off
     enabled = models.BooleanField(_("Enable Global Settings"), blank=True, default=True)
     site = models.ForeignKey(Site, on_delete=models.CASCADE)
+    colors = models.ForeignKey('ColorGroupModel', on_delete=models.CASCADE, related_name="global_colors", blank=True, null=True)
 
+    # Used to render Chart.global.default options with the plugin (once per page)
     @classmethod
-    def get_global_options_list(cls, site_id=None):
+    def get_global_options(cls, site_id=None):
         site_id = site_id or settings.SITE_ID
+        cache_kls = f'{cls.__name__}_options'
 
         # Get Cached
         # -------------------
-        cached_global_options = charts_cache.get(cls.__name__, site_id)
+        cached_global_options = charts_cache.get(cache_kls, site_id)
         if cached_global_options:
             return cached_global_options
 
+        # Load Values if not cached
+        # -------------------
         global_options = cls.objects.filter(site_id=site_id, enabled=True)
         if global_options.exists():
-            cached_global_options = global_options.first().get_as_list()
-            charts_cache.set(cls.__name__, site_id, cached_global_options)
-            return cached_global_options
+            global_options_list = global_options.first().get_as_list()
+            charts_cache.set(cache_kls, site_id, global_options_list)
+            return global_options_list
+
+    # Used to add colors to each dataset - by default. Overriden within the Chart/Dataset objects as required.
+    @classmethod
+    def get_global_colors(cls, site_id=None):
+        site_id = site_id or settings.SITE_ID
+        cache_kls = f'{cls.__name__}_colors'
+
+        # Get Cached
+        # -------------------
+        cached_global_colors = charts_cache.get(cache_kls, site_id)
+        if cached_global_colors:
+            return cached_global_colors
+
+        # Load Values if not cached
+        # -------------------
+        global_options = cls.objects.filter(site_id=site_id, enabled=True)
+        if global_options.exists() and global_options.first().colors:
+            global_colors = global_options.first().colors.get_as_dict()
+            charts_cache.set(cache_kls, site_id, global_colors)
+            return global_colors
 
 
 class GlobalOptionsModel(OptionsBase):
@@ -159,10 +187,4 @@ class DatasetOptionsModel(OptionsBase):
     options_group = models.ForeignKey('DatasetOptionsGroupModel', on_delete=models.CASCADE, related_name='options')
 
 
-# Axis Options Model
-# --------------------------------------
-class AxisOptionsGroupModel(OptionsGroupBase):
-    pass
 
-class AxisOptionsModel(OptionsBase):
-    options_group = models.ForeignKey('AxisOptionsGroupModel', on_delete=models.CASCADE, related_name='options')

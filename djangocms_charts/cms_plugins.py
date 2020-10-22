@@ -25,16 +25,19 @@ class ChartJsPlugin(CMSPluginBase):
             'fields': ('label', 'type', 'caption')
         }),
         (_('Data Format'), {
-            'fields': (('labels_top', 'labels_left',), 'data_series_format')
+            'fields': (('labels_top', 'labels_left'), 'data_series_format')
         }),
         (_("Input Table or CSV"), {
             'fields': ('table_data', 'csv_upload')
         }),
+        (_("Dataset Colors"), {
+            'fields': ('color_by_dataset', 'colors')
+        }),
         (_("Chart Options"), {
-            'fields': (('chart_options', 'options', 'xAxis', 'yAxis'))
+            'fields': ('chart_options', 'options', 'xAxis', 'yAxis')
         }),
         (_("Chart Settings"), {
-            'fields': (('display_title', 'chart_width', 'chart_height'))
+            'fields': ('display_title', 'chart_width', 'chart_height')
         }),
         (_("Chart Classes"), {
             'classes': ('collapse',),
@@ -44,13 +47,18 @@ class ChartJsPlugin(CMSPluginBase):
 
     def render(self, context, instance, placeholder):
         context = super(ChartJsPlugin, self).render(context, instance, placeholder)
+        global_options_list = GlobalOptionsGroupModel.get_global_options()
         chart_data = instance.get_chart_as_dict()
         chart_json = json.dumps(chart_data)
-        global_opts = GlobalOptionsGroupModel.get_global_options_list()
+        color_by_dataset = instance.color_by_dataset if instance.color_by_dataset is not None else False
+        color_by_dataset = json.dumps(color_by_dataset)
+        enable_chartjs_sass = getattr(settings, 'DJANGOCMS_CHARTS_ENABLE_CHARTJS_SASS', False)
 
         context.update({
             'chart_data': chart_json,
-            'global_options': global_opts
+            'global_options': global_options_list,
+            'color_by_dataset': color_by_dataset,
+            'enable_chartjs_sass': enable_chartjs_sass,
         })
         return context
 
@@ -73,8 +81,11 @@ class DatasetPlugin(CMSPluginBase):
         (_("Input Table or CSV"), {
             'fields': ('table_data', 'csv_upload')
         }),
+        (_("Dataset Colors"), {
+            'fields': ('color_by_dataset', 'colors')
+        }),
         (_("Chart Options"), {
-            'fields': (('options', 'xAxis', 'yAxis'))
+            'fields': ('options', 'xAxis', 'yAxis')
         }),
     )
 

@@ -1,5 +1,6 @@
 import csv
 import io
+import json
 from django_select2.forms import Select2Widget
 from django import forms
 from django.core.exceptions import ValidationError
@@ -7,7 +8,7 @@ from django.forms.models import ModelForm
 from django.utils.translation import ugettext_lazy as _
 
 from djangocms_charts.consts import get_chartjs_global_options, OPTION_DATA_TYPES, get_chartjs_dataset_options, \
-    get_chartjs_chart_options, get_chartjs_axis_options
+    get_chartjs_chart_options, get_chartjs_axis_options, CHART_TYPES, COLOR_LABELS
 from djangocms_charts.widgets import *
 from djangocms_charts.utils import *
 
@@ -128,3 +129,24 @@ class DatasetInputForm(ModelForm):
         labels = {
             'options': _('Dataset options'),
         }
+
+
+
+# Color Inline input form
+# ------------------------
+
+class ColorInputForm(ModelForm):
+    types = forms.MultipleChoiceField(label=_('Select Chart Types'), help_text=_('Hold CTRL for multiple values'),
+                                      choices=CHART_TYPES.get_choices)
+    labels = forms.MultipleChoiceField(label=_('Select Namespace Labels'), help_text=_('Hold CTRL for multiple values'),
+                                       choices=COLOR_LABELS)
+    colors = forms.CharField(label=_('Select Colors for each dataset'), widget=MultiColorSelectWidget,
+                             help_text=_('Click and drag changes to change order, or enter manually'))
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        if self.initial and self.initial['types']:
+            self.initial['types'] = json.loads(self.initial['types'].replace("'", '"'))
+        if self.initial and self.initial['labels']:
+            self.initial['labels'] = json.loads(self.initial['labels'].replace("'", '"'))
+

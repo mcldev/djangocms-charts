@@ -5,10 +5,18 @@ from django.template.defaultfilters import slugify
 from django.utils.translation import ugettext_lazy as _
 
 import djangocms_charts.cache as charts_cache
+from .models_options import OptionsGroupBase, OptionsBase
 from .consts import AXIS_TYPES, AXIS_DISPLAY
 
 
-class AxisModel(models.Model):
+# Axis Options Model
+# --------------------------------------
+
+class AxisOptionsModel(OptionsBase):
+    options_group = models.ForeignKey('AxisOptionsGroupModel', on_delete=models.CASCADE, related_name='options')
+
+
+class AxisOptionsGroupModel(OptionsGroupBase):
     # data: {
     #         labels: ['January', 'February', 'March', 'April', 'May', 'June'],
     #         datasets: [{
@@ -59,9 +67,8 @@ class AxisModel(models.Model):
     #         }
     #     }
 
-    label = models.CharField(_("Axis Name"), max_length=256)
-    type = models.CharField(_("Axis Type"), max_length=10, choices=AXIS_TYPES)
-    slug = models.SlugField(unique=True)
+    type = models.CharField(_("Axis Type"), max_length=10, choices=AXIS_TYPES, blank=True, null=True)
+    slug = models.SlugField(unique=True, blank=True, null=True)
 
     display = models.CharField(_('display'), help_text=_(
         'Controls the axis global visibility (visible when true, hidden when false). '
@@ -71,34 +78,36 @@ class AxisModel(models.Model):
         'The weight used to sort the axis. Higher weights are further away from the chart area.'), null=True,
                                  blank=True)
 
-    options = models.ForeignKey('AxisOptionsGroupModel', on_delete=models.CASCADE, related_name='axis_options', blank=True, null=True)
-
     def save(self, *args, **kwargs):
-        self.slug = slugify(f'{self.type}_{self.label}')
-        super(AxisModel, self).save(*args, **kwargs)
+        super().save(*args, **kwargs)
+        self.slug = slugify(f'{self.id}_{self.name}')
+        super().save(*args, **kwargs)
         charts_cache.clear_all()
 
-    def get_as_dict(self):
+    def delete(self, *args, **kwargs):
+        super().delete(*args, **kwargs)
+        charts_cache.clear_all()
+
+    def get_axis_as_dict(self, x_or_y):
         axis_dict = {}
-        axis_dict['id'] = self.slug
-        axis_dict['type'] = self.type
+        axis_dict['id'] = self.get_axis_id(x_or_y)
+        if self.type:
+            axis_dict['type'] = self.type
         if self.display:
             axis_dict['display'] = json.loads(self.display)
         if self.weight:
             axis_dict['weight'] = self.weight
-        if self.options:
-            axis_dict.update(self.options.get_as_dict())
-
+        options = super(AxisOptionsGroupModel, self).get_as_dict()
+        if options:
+            axis_dict.update(options)
         return axis_dict
 
-    @property
-    def axis_name(self):
-        get_name = str(f'{self.type}_{self.label or self.id}')
-        #  Replace all non-chars
-        get_name = slugify(get_name)
-        return get_name
+    def get_axis_id(self, x_or_y):
+        return slugify(f'{x_or_y}_{self.slug}')
 
     # Axis Name
     def __str__(self):
-        return self.axis_name
+        if self.type:
+            return str(f'{self.name or self.id} [{self.type}]')
+        return str(f'{self.name or self.id}')
 

@@ -1,8 +1,8 @@
 # Include the license file
 include LICENSE
+include README.md
 
 # Include the data files
 recursive-include djangocms_charts/static *
 recursive-include djangocms_charts/templates *
 
-recursive-exclude djangocms_charts/highcharts *
