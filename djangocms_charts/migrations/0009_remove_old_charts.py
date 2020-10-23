@@ -7,7 +7,7 @@ import djangocms_charts.models_datasets
 
 class Migration(migrations.Migration):
     dependencies = [
-        ('djangocms_charts', '0006_copy_old_charts'),
+        ('djangocms_charts', '0008_set_new_chart_options'),
     ]
 
     operations = [

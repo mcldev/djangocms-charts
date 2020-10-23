@@ -4,12 +4,13 @@ from django.db import models
 from django.utils.translation import ugettext_lazy as _
 
 from djangocms_charts.consts import *
+from djangocms_charts.models_options import OptionsParentBase
 from djangocms_charts.utils import transpose
 
 import djangocms_charts.cache as charts_cache
 
 
-class DatasetBase(models.Model):
+class DatasetBase(OptionsParentBase):
 
     """
     Dataset Mixin
@@ -30,7 +31,7 @@ class DatasetBase(models.Model):
     color_by_dataset = models.BooleanField(_('Color by Dataset'), blank=True, null=True, default=False,
                                            help_text=_('True to color each Dataset, False to color each element in a Series'))
     colors = models.ForeignKey('ColorGroupModel', on_delete=models.CASCADE, related_name="%(class)s_colors", blank=True, null=True)
-    options = models.ForeignKey('DatasetOptionsGroupModel', on_delete=models.CASCADE, related_name="%(class)s_options", blank=True, null=True)
+    dataset_options_group = models.ForeignKey('DatasetOptionsGroupModel', on_delete=models.CASCADE, related_name="%(class)s_options", blank=True, null=True)
     xAxis = models.ForeignKey('AxisOptionsGroupModel', on_delete=models.CASCADE, related_name="%(class)s_xAxis", blank=True, null=True)
     yAxis = models.ForeignKey('AxisOptionsGroupModel', on_delete=models.CASCADE, related_name="%(class)s_yAxis", blank=True, null=True)
 
@@ -306,8 +307,11 @@ class DatasetBase(models.Model):
             # Add dataset type, redundant for main chart
             dataset['type'] = self.chart_type
             # Add dataset options if included
-            if self.options:
-                dataset.update(self.options.get_as_dict())
+            if self.dataset_options_group:
+                dataset.update(self.dataset_options_group.get_as_dict())
+            # Add Dataset specific options only for a dataset i.e. not chart
+            if self.__class__.__name__ == "DatasetModel":
+                dataset.update(self.get_options_as_dict())
             if self.xAxis:
                 dataset['xAxisID'] = self.xAxis.get_axis_id('x')
             if self.yAxis:

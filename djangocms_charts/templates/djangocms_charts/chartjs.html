@@ -83,33 +83,3 @@
         {% endif %}
     </script>
 {% endaddtoblock %}
-
-{#    {% addtoblock "js" %}#}
-{#        <script>#}
-{#            // Uncomment the function below for a full formatted list of Chart.defaults options#}
-{#            function get_keys(obj, parent, lvl = 0) {#}
-{#                var arr = new Array();#}
-{#                for (const key of Object.keys(obj).sort()) {#}
-{#                    if (obj[key] && obj[key].constructor === Object) {#}
-{#                        if (lvl === 0) {#}
-{#                            console.log(`"options.${key}": [`)#}
-{#                        }#}
-{#                        var new_parent = (parent !== "") ? parent + "." + key : key;#}
-{#                        var new_lvl = lvl + 1;#}
-{#                        get_keys(obj[key], new_parent, new_lvl);#}
-{#                        if (lvl === 0) {#}
-{#                            console.log(`],`)#}
-{#                        }#}
-{#                    } else {#}
-{#                        new_prt = (parent === "") ? "options" : parent;#}
-{#                        arr.push(`"${new_prt}.${key}", `);#}
-{#                        // console.log(`"${parent}.${key}", `);#}
-{#                    }#}
-{#                }#}
-{#                for(const pk of arr){#}
-{#                    console.log(pk);#}
-{#                }#}
-{#            }#}
-{#            //get_keys(chart_{{ instance.id }}.options, "");#}
-{#        </script>#}
-

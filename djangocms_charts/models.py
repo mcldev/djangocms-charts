@@ -3,20 +3,21 @@ from cms.models import CMSPlugin
 from django.template.defaultfilters import slugify
 from django.utils.translation import ugettext_lazy as _
 
-from .models_datasets import DatasetBase
-from .models_options import *
-from .utils import get_unique_list
+import djangocms_charts.cache as charts_cache
+from djangocms_charts.utils import get_unique_list
+from .consts import LEGEND_POSITIONS
+
 from .models_axes import AxisOptionsGroupModel, AxisOptionsModel
 from .models_colors import ColorGroupModel, ColorModel
+from .models_datasets import DatasetBase
+from .models_options import *
 
-import djangocms_charts.cache as charts_cache
 
 # --------------------------------------
 
 # Main Chart Model
 
 # --------------------------------------
-
 
 class ChartModel(CMSPlugin, DatasetBase):
     """
@@ -31,18 +32,21 @@ class ChartModel(CMSPlugin, DatasetBase):
 
     caption = models.TextField(_('Caption text below chart'), null=True, blank=True)
 
-    # Chart Custom Settings
+    # Chart Common Settings
     display_title = models.BooleanField(_("Display Title"), default=True)
+    display_legend = models.BooleanField(_("Display Legend"), default=True)
+    legend_position = models.CharField(_("Legend Position"), max_length=100, blank=True, null=True,
+                                       choices=LEGEND_POSITIONS, default=LEGEND_POSITIONS[0][0])
+
+    # Custom Classes and Settings for each chart
     chart_width = models.CharField(_("Chart Width"), max_length=50, null=True, blank=True)
     chart_height = models.CharField(_("Chart Height"), max_length=50, null=True, blank=True)
-
-    # Classes for each chart object
     chart_container_classes = models.TextField(_("Additional classes for Chart Container"), blank=True)
     chart_classes = models.TextField(_("Additional classes for Chart"), blank=True)
 
     # Chart options
-    chart_options = models.ForeignKey(ChartOptionsGroupModel, on_delete=models.CASCADE,
-                                      related_name="chart_options", blank=True, null=True)
+    chart_options_group = models.ForeignKey(ChartOptionsGroupModel, on_delete=models.CASCADE,
+                                            related_name="chart_options", blank=True, null=True)
 
     def get_chart_width(self):
         if self.chart_width.isnumeric():
@@ -74,9 +78,10 @@ class ChartModel(CMSPlugin, DatasetBase):
 
         # Get Chart Options
         # -------------------
-        chart_options = None
-        if self.chart_options:
-            chart_options = self.chart_options.get_as_dict().get('options', None)
+        chart_options_group = {}
+        if self.chart_options_group:
+            chart_options_group = self.chart_options_group.get_as_dict().get('options', None)
+        chart_specific_options = self.get_options_as_dict()
 
         # Append Child datasets and axes
         # -------------------
@@ -130,18 +135,30 @@ class ChartModel(CMSPlugin, DatasetBase):
         # Add Title
         # -------------------
         if self.label:
-            title_dict = {
+            options_dict.update({
                 'title': {
                     'display': self.display_title,
                     'text': self.label,
                 }
+            })
+
+        # Add Legend display and position
+        # -------------------
+        options_dict.update({
+            "legend": {
+                "display": self.display_legend,
+                "position": self.legend_position,
             }
-            options_dict.update(title_dict)
+        })
 
         # Add/override custom options
         # -------------------
-        if chart_options:
-            options_dict.update(chart_options)
+        if chart_options_group:
+            options_dict.update(chart_options_group)
+
+        # Update Specific Options over any others
+        # -------------------
+        options_dict.update(chart_specific_options.get('options', {}))
 
         # Set Cache
         # -------------------

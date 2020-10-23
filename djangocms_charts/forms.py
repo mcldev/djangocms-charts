@@ -127,7 +127,7 @@ class DatasetInputForm(ModelForm):
 
     class Meta:
         labels = {
-            'options': _('Dataset options'),
+            'dataset_options_group': _('Dataset options'),
         }
 
 

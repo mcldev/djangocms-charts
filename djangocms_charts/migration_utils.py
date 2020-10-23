@@ -154,9 +154,12 @@ def migrate_cms_plugin(apps, old_table, new_app, new_model, new_plugin_type, fie
                     val_or_func = value_mapping[old_field][None]
                     if callable(val_or_func):
                         try:
-                            new_value = val_or_func(new_value, apps)
+                            new_value = val_or_func(new_value, apps, old_plugin_data)
                         except:
-                            new_value = val_or_func(new_value)
+                            try:
+                                new_value = val_or_func(new_value, apps)
+                            except:
+                                new_value = val_or_func(new_value)
                     else:
                         new_value = val_or_func
 

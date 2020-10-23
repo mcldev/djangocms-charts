@@ -40,6 +40,11 @@ AXIS_DISPLAY = [('true', 'true'),
 DATASET_FORMATS = [('rows', 'rows'),
                    ('cols', 'cols'),]
 
+LEGEND_POSITIONS = [('top', 'top'),
+                    ('left', 'left'),
+                    ('bottom', 'bottom'),
+                    ('right', 'right'), ]
+
 OPTION_DATA_TYPES = [('text', 'text'),
                      ('number', 'number'),
                      ('boolean', 'boolean'),
@@ -48,13 +53,13 @@ OPTION_DATA_TYPES = [('text', 'text'),
                      ('function', 'function')]
 
 COLOR_LABELS = [('backgroundColor', 'backgroundColor'),
-                     ('borderColor', 'borderColor'),
-                     ('hoverBackgroundColor', 'hoverBackgroundColor'),
-                     ('hoverBorderColor', 'hoverBorderColor'),
-                     ('pointBackgroundColor', 'pointBackgroundColor'),
-                     ('pointBorderColor', 'pointBorderColor'),
-                     ('pointHoverBackgroundColor', 'pointHoverBackgroundColor'),
-                     ('pointHoverBorderColor', 'pointHoverBorderColor')]
+                ('borderColor', 'borderColor'),
+                ('hoverBackgroundColor', 'hoverBackgroundColor'),
+                ('hoverBorderColor', 'hoverBorderColor'),
+                ('pointBackgroundColor', 'pointBackgroundColor'),
+                ('pointBorderColor', 'pointBorderColor'),
+                ('pointHoverBackgroundColor', 'pointHoverBackgroundColor'),
+                ('pointHoverBorderColor', 'pointHoverBorderColor')]
 
 # -------------------------------
 
@@ -314,6 +319,8 @@ def get_chartjs_global_options():
 
 CHARTJS_CHART_OPTIONS_LOOKUP = {
     "options": [
+        "circumference",
+        "cutoutPercentage",
         "defaultColor",
         "defaultFontColor",
         "defaultFontFamily",
@@ -326,10 +333,13 @@ CHARTJS_CHART_OPTIONS_LOOKUP = {
         "onClick",
         "responsive",
         "responsiveAnimationDuration",
+        "rotation",
         "showLines",
         "spanGaps",
     ],
     "options.animation": [
+        "animation.animateRotate",
+        "animation.animateScale",
         "animation.duration",
         "animation.easing",
         "animation.onComplete",
@@ -423,10 +433,14 @@ CHARTJS_CHART_OPTIONS_LOOKUP = {
         "scale.pointLabels.callback",
         "scale.pointLabels.display",
         "scale.pointLabels.fontSize",
-        "scale.scaleLabel.padding.bottom",
-        "scale.scaleLabel.padding.top",
         "scale.scaleLabel.display",
         "scale.scaleLabel.labelString",
+        "scale.scaleLabel.lineHeight",
+        "scale.scaleLabel.fontColor",
+        "scale.scaleLabel.fontFamily",
+        "scale.scaleLabel.fontSize",
+        "scale.scaleLabel.fontStyle",
+        "scale.scaleLabel.padding",
         "scale.ticks.autoSkip",
         "scale.ticks.autoSkipPadding",
         "scale.ticks.backdropColor",
@@ -475,7 +489,10 @@ CHARTJS_CHART_OPTIONS_LOOKUP = {
         "tooltips.backgroundColor",
         "tooltips.bodyAlign",
         "tooltips.bodyFontColor",
+        "tooltips.bodyFontFamily",
+        "tooltips.bodyFontSize",
         "tooltips.bodySpacing",
+        "tooltips.bodyFontStyle",
         "tooltips.borderColor",
         "tooltips.borderWidth",
         "tooltips.caretPadding",
@@ -503,7 +520,6 @@ CHARTJS_CHART_OPTIONS_LOOKUP = {
     ],
 
 }
-
 
 CACHE_CHART_OPTIONS = []
 

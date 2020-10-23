@@ -11,13 +11,13 @@ A plugin for DjangoCMS that creates easy to use and fully customisable ChartJs (
 - 3.0.0
     - **CAUTION** - This is a complete refactoring of DjangoCMS Charts to ChartJS version 2.x
     - ***All Models, Fields, and Options have changed***
-    - ***Due to changes in ChartJS 1.x > 2.x - Custom settings will NOT be migrated***
-    - The migration attempts to bring over the core settings from each previous version chart.
-    - **ChartJS-Sass - Deprecated**
-    - All chart types are now in the ChartsJS Plugin only
-    - Multiple Datasets can be added below the parent ChartJS Plugin
+    - ***Due to changes in ChartJS 1.x > 2.x - Not all Custom settings will be migrated***
+    - The migrations attempt to bring over any settings changed from the default values from each previous chart.
+    - ChartJS is enabled by default - update settings to disable as below
+    - All chart types are now available in the ChartsJS Plugin
+    - Multiple Datasets can be added as Child Plugins of the parent ChartJS Plugin
     - Global Options are added in the Admin, as required.
-    - All Options come from the ChartJS object/dictionary and are added from a Select2 list
+    - All Options come from the ChartJS object/dictionary and are using a Select2 list
 
 ## Quick start
 1. Add 'djangocms_charts' to your INSTALLED_APPS setting like this::
@@ -76,13 +76,13 @@ The JSON view can then be accessed via:
 All chart dataset colours (backgroundColor, borderColor, etc) can be set using CSS via ChartJS-Sass. This JS library will update any unspecified colors with those specified in the CSS and built using SASS.
 For more details see: https://github.com/mcldev/ChartJS-Sass
 
-1. To enable, in `settings.py` add `DJANGOCMS_CHARTS_ENABLE_CHARTJS_SASS = True` 
+1. To disable/enable, in `settings.py` add `DJANGOCMS_CHARTS_ENABLE_CHARTJS_SASS = True or False (default=True)` 
 
 
-# Usage
+## Usage
 
-## Chart Types
-The following chart types can be selected
+### Chart Types
+The following chart types can be selected with options (see below)
 - Line
 - Line XY (Scatter with line)
 - Bar
@@ -96,7 +96,7 @@ The following chart types can be selected
 - Mixed (see Multiple Datasets)
 
 
-## Input Data
+### Input Data
 All input data will be used as below.
  
 NB: Multiple datasets can be added as either:
@@ -138,19 +138,19 @@ NB: Multiple datasets can be added as either:
     #   ...
 ```
 
-## Axes
+### Axes
 https://www.chartjs.org/docs/latest/axes/
 
 Multiple Axes can be added using X Axis or Y Axis. Each Axis can be used multiple times (e.g. Linear axis).
 Options for Axes are set below.
 
-## Multiple Datasets
+### Multiple Datasets
 https://www.chartjs.org/docs/latest/charts/mixed.html#drawing-order
 
 Multiple datasets can be added as rows/columns of the main chart, or added as Dataset child plugins.
 The rendering order for ChartJS is that the first dataset is top-most - this plugin prepends the subsequent child datasets so the last dataset is top-most.
 
-## Mixed Types
+### Mixed Types
 https://www.chartjs.org/docs/latest/charts/mixed.html
 
 Each child Dataset can have a different type, thus creating a Mixed Chart. 
@@ -206,13 +206,15 @@ https://www.chartjs.org/docs/latest/configuration/
 
 Options are set in JavaScript using the settings provided by ChartJS - Use this documentation: https://www.chartjs.org/docs/latest/ 
 
-The order of options are:
+The Options are assigned in ascending order of priority as:
 - `Chart.defaults.global.<option>` - see GlobalOptionsGroup in Admin
-    - `chart.options.<option>` - see ChartOptions Group selectable for each chart
-        - `dataset.<option>` - see DatasetOptionsGroup selectable for each dataset 
-    - `chart.options.scales.<axes>.<option>` - see AxisOptionsGroup selectable for each axis 
+- `chart.options.<option>` - see ChartOptions Group selectable for each chart
+- `chart.options.<option>` - see ChartSpecificOptions assigned to each chart individually
+- `dataset.<option>` - see DatasetOptionsGroup selectable for each dataset
+- `dataset.<option>` - see DatasetSpecificOptions assigned to each dataset individually
+- `chart.options.scales.<axes>.<option>` - see AxisOptionsGroup selectable for each axis 
 
-## Option Input Types
+### Option Input Types
 https://www.chartjs.org/docs/latest/general/options.html
 
 ChartJS accepts various input option formats, some can be scripted, functions, numbers, or text.

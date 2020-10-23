@@ -75,18 +75,15 @@ class OptionsBase(models.Model):
 
 # --------------------------------------
 
-# Options Group
+# Options Parent
 
 # --------------------------------------
-class OptionsGroupBase(models.Model):
-    name = models.CharField(_('Options Group Name'),
-                             help_text=_('Save and Reuse Options groups'),
-                             max_length=100)
+class OptionsParentBase(models.Model):
 
-    def get_as_list(self):
+    def get_options_as_list(self):
         return [(opt.label, opt.get_json_value()) for opt in self.options.all()]
 
-    def get_as_dict(self):
+    def get_options_as_dict(self):
         options_dict = {}
         for opt in self.options.all():
             labels = opt.label.split(".")
@@ -99,6 +96,25 @@ class OptionsGroupBase(models.Model):
             inner_opts[labels[-1]] = json.loads(opt.get_json_value())
 
         return options_dict
+
+    class Meta:
+        abstract = True
+
+# --------------------------------------
+
+# Options Group
+
+# --------------------------------------
+class OptionsGroupBase(OptionsParentBase):
+    name = models.CharField(_('Options Group Name'),
+                             help_text=_('Save and Reuse Options groups'),
+                             max_length=100)
+
+    def get_as_list(self):
+        return self.get_options_as_list()
+
+    def get_as_dict(self):
+        return self.get_options_as_dict()
 
     def save(self, *args, **kwargs):
         super().save(*args, **kwargs)
@@ -177,6 +193,9 @@ class ChartOptionsGroupModel(OptionsGroupBase):
 class ChartOptionsModel(OptionsBase):
     options_group = models.ForeignKey('ChartOptionsGroupModel', on_delete=models.CASCADE, related_name='options')
 
+class ChartSpecificOptionsModel(OptionsBase):
+    options_group = models.ForeignKey('ChartModel', on_delete=models.CASCADE, related_name='options')
+
 
 # Dataset Options Model
 # --------------------------------------
@@ -186,5 +205,6 @@ class DatasetOptionsGroupModel(OptionsGroupBase):
 class DatasetOptionsModel(OptionsBase):
     options_group = models.ForeignKey('DatasetOptionsGroupModel', on_delete=models.CASCADE, related_name='options')
 
-
+class DatasetSpecificOptionsModel(OptionsBase):
+    options_group = models.ForeignKey('DatasetModel', on_delete=models.CASCADE, related_name='options')
 

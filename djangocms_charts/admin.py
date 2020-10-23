@@ -4,22 +4,25 @@ from django.contrib import admin
 from .forms import GlobalOptionsInlineForm, ChartOptionsInlineForm, DatasetOptionsInlineForm, AxisOptionsInlineForm, \
     ColorInputForm
 from .models import GlobalOptionsGroupModel, GlobalOptionsModel, \
-    ChartOptionsGroupModel, ChartOptionsModel,\
+    ChartOptionsGroupModel, ChartOptionsModel, \
     DatasetOptionsGroupModel, DatasetOptionsModel, \
-    AxisOptionsGroupModel, AxisOptionsModel
-
-
-# Inline Forms for Options
-# ------------------------
+    AxisOptionsGroupModel, AxisOptionsModel, ChartSpecificOptionsModel, DatasetSpecificOptionsModel
 from .models_colors import ColorModel, ColorGroupModel
 
+
+# ------------------------
+
+# Inline Forms for Options
+
+# ------------------------
 
 class OptionsInlineBase(admin.TabularInline):
     fields = ['label', 'type', 'value']
     list_display = ('label', 'type', 'value')
     extra = 0
 
-
+# Options Groups Inlines
+# ------------------------
 class GlobalOptionsInlineAdmin(OptionsInlineBase):
     model = GlobalOptionsModel
     form = GlobalOptionsInlineForm
@@ -35,6 +38,16 @@ class DatasetOptionsInlineAdmin(OptionsInlineBase):
 class AxisOptionsInlineAdmin(OptionsInlineBase):
     model = AxisOptionsModel
     form = AxisOptionsInlineForm
+
+# Specific Options inlines
+# ------------------------
+class ChartSpecificOptionsInlineAdmin(OptionsInlineBase):
+    model = ChartSpecificOptionsModel
+    form = ChartOptionsInlineForm
+
+class DatasetSpecificOptionsInlineAdmin(OptionsInlineBase):
+    model = DatasetSpecificOptionsModel
+    form = DatasetOptionsInlineForm
 
 
 # Register Options Groups
