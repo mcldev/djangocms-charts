@@ -27,7 +27,7 @@ class OptionsBase(models.Model):
 
     type = models.CharField(_('Data Type'),
                              help_text=_('Select the input data type'),
-                             max_length=10,
+                             max_length=30,
                              default='text')
 
     value = models.TextField(_('Option Value'),

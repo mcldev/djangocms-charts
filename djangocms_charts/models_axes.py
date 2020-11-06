@@ -67,7 +67,7 @@ class AxisOptionsGroupModel(OptionsGroupBase):
     #         }
     #     }
 
-    type = models.CharField(_("Axis Type"), max_length=10, choices=AXIS_TYPES, blank=True, null=True)
+    type = models.CharField(_("Axis Type"), max_length=30, choices=AXIS_TYPES, blank=True, null=True)
     slug = models.SlugField(unique=True, blank=True, null=True)
 
     display = models.CharField(_('display'), help_text=_(
