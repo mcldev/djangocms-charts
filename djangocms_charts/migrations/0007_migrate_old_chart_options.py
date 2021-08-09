@@ -2,7 +2,7 @@
 from django.db import migrations, models
 import warnings
 import json
-from djangocms_charts.migration_utils import migrate_cms_plugin, fetch_rows_as_dict
+from djangocms_charts.migration_utils import migrate_cms_plugin, fetch_rows_as_dict, check_table_exists, get_cursor
 
 models_to_migrate = [
     'ChartJsBarModel',
@@ -79,8 +79,10 @@ def save_chart_options(old_plugin_data, apps):
 def migrate_chart_options(apps, schema_editor):
     for old_app in models_to_migrate:
         old_table = f'djangocms_charts_{old_app.lower()}'
-        old_chart_dict = fetch_rows_as_dict(table_name=old_table)
-        save_chart_options(old_chart_dict, apps)
+        cursor = get_cursor()
+        if check_table_exists(cursor, old_table):
+            old_chart_dict = fetch_rows_as_dict(table_name=old_table)
+            save_chart_options(old_chart_dict, apps)
 
 
 class Migration(migrations.Migration):
