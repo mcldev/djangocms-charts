@@ -5,7 +5,7 @@ from django_select2.forms import Select2Widget
 from django import forms
 from django.core.exceptions import ValidationError
 from django.forms.models import ModelForm
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import gettext_lazy as _
 
 from djangocms_charts.consts import get_chartjs_global_options, OPTION_DATA_TYPES, get_chartjs_dataset_options, \
     get_chartjs_chart_options, get_chartjs_axis_options, CHART_TYPES, COLOR_LABELS

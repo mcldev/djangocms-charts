@@ -3,7 +3,7 @@ import json
 from cms.plugin_base import CMSPluginBase
 from cms.plugin_pool import plugin_pool
 from django.conf import settings
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import gettext_lazy as _
 
 from djangocms_charts.admin import ChartSpecificOptionsInlineAdmin, DatasetSpecificOptionsInlineAdmin
 from djangocms_charts.forms import DatasetInputForm
