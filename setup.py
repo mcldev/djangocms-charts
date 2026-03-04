@@ -39,6 +39,14 @@ setup(
         'django-cms>=3.11,<3.12',
         'django-select2>=8.0',
     ],
+    extras_require={
+        'test': [
+            'djangocms-text-ckeditor>=5.1',
+            'django-sekizai>=4.0',
+            'djangocms-named-menus>=2.1',
+            'django-admin-sortable2',
+        ],
+    },
     package_data={
         'readme': ['README.rst'],
         'license': ['LICENSE']
