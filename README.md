@@ -261,3 +261,43 @@ http://www.chartjs.org/
  
 ChartJs is a dynamic JS charting application giving users an interactive and visually appealing chart in an html 5 canvas. Each type of chart is available:
 
+
+## Testing
+
+### Install test dependencies
+
+```bash
+pip install -e ".[test]"
+```
+
+This installs the package in editable mode along with test dependencies:
+- `djangocms-text-ckeditor`
+- `django-sekizai`
+- `django-admin-sortable2`
+
+### Run tests
+
+```bash
+python -m django test tests --settings=tests.settings
+```
+
+For verbose output:
+
+```bash
+python -m django test tests --settings=tests.settings -v 2
+```
+
+Tests use an in-memory SQLite database and cover:
+- Utility functions (`transpose`, `get_unique_list`, `color_variant`)
+- Chart type constants and coordinate type detection
+- Options type coercion (text, number, boolean, JSON, array, function)
+- Nested options dict building from dot-separated labels
+- Color model/group parsing and dict generation
+- Axis options group model and axis dict building
+- Dataset parsing (rows, columns, scatter coordinates, empty data)
+- Chart model properties (slugified names, IDs, width/height helpers)
+- Full chart dict generation (`get_chart_as_dict()`)
+- CMS plugin registration (`ChartJsPlugin`, `DatasetPlugin`)
+- Global options and global colors
+
+
