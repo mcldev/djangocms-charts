@@ -37,7 +37,7 @@ INSTALLED_APPS = [
 
 SITE_ID = 1
 
-ROOT_URLCONF = 'djangocms_charts.test_urls'
+ROOT_URLCONF = 'tests.urls'
 
 LANGUAGE_CODE = 'en'
 

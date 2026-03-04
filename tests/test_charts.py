@@ -617,5 +617,3 @@ class GlobalOptionsTests(TestCase):
         self.assertIsNotNone(result)
         self.assertIn('bar', result)
 
-if __name__ == '__main__':
-    unittest.main()
