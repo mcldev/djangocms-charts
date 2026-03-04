@@ -1,11 +1,11 @@
 from django.conf import settings
 from django.core.cache import cache, InvalidCacheBackendError
 from django.core.cache import caches
-from cms_named_menus.settings import CACHE_DURATION
 import warnings
 
 
 KEY_PREFIX = 'djangocms_charts_'
+CACHE_DURATION = getattr(settings, 'DJANGO_CMS_CHARTS_CACHE_DURATION', 3600)
 
 
 def get_charts_cache():

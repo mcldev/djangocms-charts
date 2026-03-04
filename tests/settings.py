@@ -27,8 +27,6 @@ INSTALLED_APPS = [
     'treebeard',
     'sekizai',
     'djangocms_text_ckeditor',
-    # Named menus (needed by cache.py import)
-    'cms_named_menus',
     # App under test
     'djangocms_charts',
     # django-select2 (required by forms.py)

@@ -44,8 +44,6 @@ setup(
             'djangocms-text-ckeditor>=5.1',
             'django-sekizai>=4.0',
             'django-admin-sortable2',
-            # djangocms-named-menus is also required (imported by cache.py)
-            # Install from local checkout: pip install -e ../djangocms-named-menus
         ],
     },
     package_data={
