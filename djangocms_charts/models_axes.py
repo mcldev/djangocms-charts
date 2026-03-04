@@ -81,7 +81,7 @@ class AxisOptionsGroupModel(OptionsGroupBase):
     def save(self, *args, **kwargs):
         super().save(*args, **kwargs)
         self.slug = slugify(f'{self.id}_{self.name}')
-        super().save(*args, **kwargs)
+        super().save(update_fields=['slug'])
         charts_cache.clear_all()
 
     def delete(self, *args, **kwargs):
