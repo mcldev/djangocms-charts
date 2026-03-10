@@ -1,0 +1,8 @@
+django<5.0,>=4.2
+django-cms<3.12,>=3.11
+django-select2>=8.0
+
+[test]
+djangocms-text-ckeditor>=5.1
+django-sekizai>=4.0
+django-admin-sortable2
