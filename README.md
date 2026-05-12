@@ -6,18 +6,66 @@
 
 A plugin for DjangoCMS that creates easy to use and fully customisable ChartJs (ver 2.x) charts - with a table and csv upload interface.
 
-## Updates
+## Updates / Changelog
 
-- 3.0.0
-    - **CAUTION** - This is a complete refactoring of DjangoCMS Charts to ChartJS version 2.x
-    - ***All Models, Fields, and Options have changed***
-    - ***Due to changes in ChartJS 1.x > 2.x - Not all Custom settings will be migrated***
-    - The migrations attempt to bring over any settings changed from the default values from each previous chart.
-    - ChartJS is enabled by default - update settings to disable as below
-    - All chart types are now available in the ChartsJS Plugin
-    - Multiple Datasets can be added as Child Plugins of the parent ChartJS Plugin
-    - Global Options are added in the Admin, as required.
-    - All Options come from the ChartJS object/dictionary and are using a Select2 list
+### 3.1.0 — *Django 4.2 / djangoCMS 3.11 / Python 3.11* (2026-03 → 2026-05)
+- **Upgrade to Django 4.2 LTS, django CMS 3.11, Python 3.9 – 3.11.**
+  - Replaced all `ugettext_lazy` with `gettext_lazy` (removed in Django 4.x)
+  - Updated `install_requires` to `django>=4.2,<5.0`, `django-cms>=3.11,<3.12`,
+    `django-select2>=8.0`
+  - Updated `setup.py` classifiers and `python_requires>=3.9`
+- **Architecture documentation** — new `ARCHITECTURE.md` describing models,
+  options, datasets, colors, axes and plugins.
+- **Test suite** — tests moved into a dedicated `tests/` directory with
+  `tests/settings.py` + `tests/urls.py`, runnable as
+  `python -m django test tests --settings=tests.settings`. Coverage now
+  includes utilities, `CHART_TYPES`, options type coercion, nested options
+  dict building, color/axis models, dataset parsing (rows/cols/scatter),
+  chart model properties, `get_chart_as_dict()`, plugin registration and
+  global options.
+- `extras_require[test]` added (`djangocms-text-ckeditor`, `django-sekizai`,
+  `django-admin-sortable2`).
+- **Bug fixes**
+  - `AxisOptionsGroupModel`: second `save()` now uses
+    `update_fields=['slug']` to avoid the previous double-insert
+    triggered by `force_insert=True`.
+  - `utils.color_variant`: hex values are now zero-padded to two digits
+    using an f-string (`{:02x}`) so dark colour variants render
+    correctly.
+- Repo hygiene: `__pycache__/` and `.idea/` removed from version control
+  and added to `.gitignore`.
+
+### 3.0.3 (2023-03-26)
+- Bug fix: chart-specific options are now copied on publish.
+
+### 3.0.2 (2021-08-09 → 2020-11-09)
+- Fix for migrations error.
+- Increase field sizes for type/label fields (avoids truncation on long
+  ChartJS option names).
+
+### 3.0.0 / 3.0.1 — *Complete refactor to ChartJS 2.x* (2020-05 → 2020-10)
+- **CAUTION** — complete refactor of DjangoCMS Charts to ChartJS **2.x**.
+  - ***All Models, Fields and Options have changed***
+  - ***Due to changes in ChartJS 1.x → 2.x not all custom settings can be migrated***
+  - Migrations attempt to bring over any settings that were changed from
+    their defaults on each previous chart.
+- ChartJS is enabled by default — see settings below to disable.
+- All chart types are now available in the single ChartJS plugin.
+- Multiple Datasets can be added as child plugins of the parent ChartJS plugin.
+- Global Options are added in the Admin, as required.
+- All Options come from the ChartJS object / dictionary and use a Select2 list.
+- Upgrade to Django 2.2+ and Python 3 compatibility fixes.
+- CSV upload fixes.
+
+### 2.x (2019)
+- Python 3.7 compatibility.
+- Removed bundled (outdated) jQuery — now relies on a project-supplied
+  version added to the `js` sekizai block.
+
+### 1.x (2016 – 2018)
+- Initial release on the Aldryn marketplace.
+- Django 1.11 URL/`get_all_field_names` fixes.
+
 
 ## Quick start
 1. Add 'djangocms_charts' to your INSTALLED_APPS setting like this::

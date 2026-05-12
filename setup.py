@@ -47,7 +47,7 @@ setup(
         ],
     },
     package_data={
-        'readme': ['README.rst'],
+        'readme': ['README.md'],
         'license': ['LICENSE']
     },
 )
