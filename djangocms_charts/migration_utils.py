@@ -36,10 +36,8 @@ def update_indexes(cursor, table_name):
 
 
 def check_table_exists(cursor, table_name):
-    check_exists_query = "SELECT relname FROM pg_class WHERE relname=%s;"
-    cursor.execute(check_exists_query, [table_name])
-    result = cursor.fetchone()
-    return result
+    tables = connection.introspection.table_names(cursor)
+    return table_name in tables
 
 
 def copy_old_table_to_model(apps, old_table, new_app, new_model, fields_to_migrate=None, value_mapping=None):

@@ -1,7 +1,7 @@
 from cms.models import CMSPlugin
 
 from django.template.defaultfilters import slugify
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import gettext_lazy as _
 
 import djangocms_charts.cache as charts_cache
 from djangocms_charts.utils import get_unique_list

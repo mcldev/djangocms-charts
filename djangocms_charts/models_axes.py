@@ -2,7 +2,7 @@ import json
 
 from django.db import models
 from django.template.defaultfilters import slugify
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import gettext_lazy as _
 
 import djangocms_charts.cache as charts_cache
 from .models_options import OptionsGroupBase, OptionsBase
@@ -81,7 +81,7 @@ class AxisOptionsGroupModel(OptionsGroupBase):
     def save(self, *args, **kwargs):
         super().save(*args, **kwargs)
         self.slug = slugify(f'{self.id}_{self.name}')
-        super().save(*args, **kwargs)
+        super().save(update_fields=['slug'])
         charts_cache.clear_all()
 
     def delete(self, *args, **kwargs):
