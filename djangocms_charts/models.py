@@ -45,7 +45,7 @@ class ChartModel(CMSPlugin, DatasetBase):
     chart_classes = models.TextField(_("Additional classes for Chart"), blank=True)
 
     # Chart options
-    chart_options_group = models.ForeignKey(ChartOptionsGroupModel, on_delete=models.CASCADE,
+    chart_options_group = models.ForeignKey(ChartOptionsGroupModel, on_delete=models.SET_NULL,
                                             related_name="chart_options", blank=True, null=True)
 
     def copy_relations(self, old_instance):

@@ -751,3 +751,89 @@ class ColorInputFormInitTests(TestCase):
         self.assertEqual(form.initial['types'], ['bar', 'line'])
         self.assertEqual(form.initial['labels'], ['backgroundColor'])
 
+
+# ============================================================
+# Issue 1.3 — FK on_delete=CASCADE destroys charts/datasets
+# ============================================================
+
+class ForeignKeyCascadeTests(CMSTestCase):
+    """Deleting a reusable preset (options group, color group, axis) must
+    nullify the FK on charts/datasets, not delete them."""
+
+    def _make_chart(self, **kwargs):
+        placeholder = Placeholder.objects.create(slot='fk_test')
+        defaults = dict(label='FK Test', type='bar', table_data='[]',
+                        labels_top=True, labels_left=True, data_series_format='rows')
+        defaults.update(kwargs)
+        return add_plugin(placeholder, 'ChartJsPlugin', 'en', **defaults)
+
+    def test_deleting_chart_options_group_nullifies_fk(self):
+        group = ChartOptionsGroupModel.objects.create(name='deletable_chart_opts')
+        chart = self._make_chart()
+        chart.chart_options_group = group
+        chart.save()
+        pk = chart.pk
+
+        group.delete()
+
+        self.assertTrue(ChartModel.objects.filter(pk=pk).exists(),
+                        'chart was deleted when its chart_options_group was deleted')
+        chart.refresh_from_db()
+        self.assertIsNone(chart.chart_options_group)
+
+    def test_deleting_color_group_nullifies_fk(self):
+        color_group = ColorGroupModel.objects.create(name='deletable_colors')
+        chart = self._make_chart()
+        chart.colors = color_group
+        chart.save()
+        pk = chart.pk
+
+        color_group.delete()
+
+        self.assertTrue(ChartModel.objects.filter(pk=pk).exists(),
+                        'chart was deleted when its color group was deleted')
+        chart.refresh_from_db()
+        self.assertIsNone(chart.colors)
+
+    def test_deleting_dataset_options_group_nullifies_fk(self):
+        ds_group = DatasetOptionsGroupModel.objects.create(name='deletable_ds_opts')
+        chart = self._make_chart()
+        chart.dataset_options_group = ds_group
+        chart.save()
+        pk = chart.pk
+
+        ds_group.delete()
+
+        self.assertTrue(ChartModel.objects.filter(pk=pk).exists(),
+                        'chart was deleted when its dataset_options_group was deleted')
+        chart.refresh_from_db()
+        self.assertIsNone(chart.dataset_options_group)
+
+    def test_deleting_xaxis_nullifies_fk(self):
+        axis = AxisOptionsGroupModel.objects.create(name='deletable_x', type='category')
+        chart = self._make_chart()
+        chart.xAxis = axis
+        chart.save()
+        pk = chart.pk
+
+        axis.delete()
+
+        self.assertTrue(ChartModel.objects.filter(pk=pk).exists(),
+                        'chart was deleted when its xAxis was deleted')
+        chart.refresh_from_db()
+        self.assertIsNone(chart.xAxis)
+
+    def test_deleting_yaxis_nullifies_fk(self):
+        axis = AxisOptionsGroupModel.objects.create(name='deletable_y', type='linear')
+        chart = self._make_chart()
+        chart.yAxis = axis
+        chart.save()
+        pk = chart.pk
+
+        axis.delete()
+
+        self.assertTrue(ChartModel.objects.filter(pk=pk).exists(),
+                        'chart was deleted when its yAxis was deleted')
+        chart.refresh_from_db()
+        self.assertIsNone(chart.yAxis)
+

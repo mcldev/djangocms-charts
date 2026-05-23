@@ -29,27 +29,13 @@ replaced with the public API — `from cms.models import CMSPlugin` with
 Fixed in branch `fix/2026-05-23_chart-as-json`: `return Http404(...)` is now
 `raise Http404(...)`.
 
-### 1.3 🔴 `ForeignKey(on_delete=CASCADE)` cascades into chart/dataset rows
-`djangocms_charts/models.py:48` and `djangocms_charts/models_datasets.py:33-36`
-```python
-chart_options_group = models.ForeignKey(ChartOptionsGroupModel,
-    on_delete=models.CASCADE, ..., blank=True, null=True)
-colors             = models.ForeignKey('ColorGroupModel',
-    on_delete=models.CASCADE, ..., blank=True, null=True)
-dataset_options_group = models.ForeignKey('DatasetOptionsGroupModel',
-    on_delete=models.CASCADE, ..., blank=True, null=True)
-xAxis              = models.ForeignKey('AxisOptionsGroupModel',
-    on_delete=models.CASCADE, ..., blank=True, null=True)
-yAxis              = models.ForeignKey('AxisOptionsGroupModel',
-    on_delete=models.CASCADE, ..., blank=True, null=True)
-```
-Every chart and dataset references *reusable*, nullable lookup objects
-with `CASCADE`. **Deleting a single color group, axis, or options group
-removes every chart and dataset that referenced it.** That is almost
-certainly not the intended semantics for nullable "preset" relations.
+### 1.3 ✅ ~~`ForeignKey(on_delete=CASCADE)` cascades into chart/dataset rows~~ — **RESOLVED**
 
-**Fix** — change all five to `on_delete=models.SET_NULL` and add a
-migration. (Pure Django field-attribute migration, no data change.)
+Fixed: all five fields changed to `on_delete=models.SET_NULL` across
+`models.py` and `models_datasets.py`. Migration
+`0012_alter_chartmodel_chart_options_group_and_more.py` applies the
+change to all 9 concrete columns (5 on `ChartModel`, 4 on `DatasetModel`)
+with no data change required.
 
 ### 1.4 ✅ ~~`clean_table_data` returns `None` for empty input~~ — **RESOLVED**
 
