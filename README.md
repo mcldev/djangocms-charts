@@ -8,15 +8,15 @@ A plugin for DjangoCMS that creates easy to use and fully customisable ChartJs (
 
 ## Updates / Changelog
 
-### 3.1.0 — *Django 4.2 / djangoCMS 3.11 / Python 3.11* (2026-03 → 2026-05)
+### 3.1.0 - *Django 4.2 / djangoCMS 3.11 / Python 3.11* (2026-03 → 2026-05)
 - **Upgrade to Django 4.2 LTS, django CMS 3.11, Python 3.9 – 3.11.**
   - Replaced all `ugettext_lazy` with `gettext_lazy` (removed in Django 4.x)
   - Updated `install_requires` to `django>=4.2,<5.0`, `django-cms>=3.11,<3.12`,
     `django-select2>=8.0`
   - Updated `setup.py` classifiers and `python_requires>=3.9`
-- **Architecture documentation** — new `ARCHITECTURE.md` describing models,
+- **Architecture documentation** - new `ARCHITECTURE.md` describing models,
   options, datasets, colors, axes and plugins.
-- **Test suite** — tests moved into a dedicated `tests/` directory with
+- **Test suite** - tests moved into a dedicated `tests/` directory with
   `tests/settings.py` + `tests/urls.py`, runnable as
   `python -m django test tests --settings=tests.settings`. Coverage now
   includes utilities, `CHART_TYPES`, options type coercion, nested options
@@ -43,13 +43,13 @@ A plugin for DjangoCMS that creates easy to use and fully customisable ChartJs (
 - Increase field sizes for type/label fields (avoids truncation on long
   ChartJS option names).
 
-### 3.0.0 / 3.0.1 — *Complete refactor to ChartJS 2.x* (2020-05 → 2020-10)
-- **CAUTION** — complete refactor of DjangoCMS Charts to ChartJS **2.x**.
+### 3.0.0 / 3.0.1 - *Complete refactor to ChartJS 2.x* (2020-05 → 2020-10)
+- **CAUTION** - complete refactor of DjangoCMS Charts to ChartJS **2.x**.
   - ***All Models, Fields and Options have changed***
   - ***Due to changes in ChartJS 1.x → 2.x not all custom settings can be migrated***
   - Migrations attempt to bring over any settings that were changed from
     their defaults on each previous chart.
-- ChartJS is enabled by default — see settings below to disable.
+- ChartJS is enabled by default - see settings below to disable.
 - All chart types are now available in the single ChartJS plugin.
 - Multiple Datasets can be added as child plugins of the parent ChartJS plugin.
 - Global Options are added in the Admin, as required.
@@ -59,7 +59,7 @@ A plugin for DjangoCMS that creates easy to use and fully customisable ChartJs (
 
 ### 2.x (2019)
 - Python 3.7 compatibility.
-- Removed bundled (outdated) jQuery — now relies on a project-supplied
+- Removed bundled (outdated) jQuery - now relies on a project-supplied
   version added to the `js` sekizai block.
 
 ### 1.x (2016 – 2018)

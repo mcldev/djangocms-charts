@@ -6,6 +6,7 @@ work correctly with Django 4.2, djangoCMS 3.11, and Python 3.11.
 import json
 
 from django.contrib.sites.models import Site
+from django.core.exceptions import ValidationError
 from django.test import TestCase, RequestFactory, override_settings
 
 from cms.api import add_plugin, create_page
@@ -14,6 +15,7 @@ from cms.plugin_pool import plugin_pool
 from cms.test_utils.testcases import CMSTestCase
 
 from djangocms_charts.consts import CHART_TYPES
+from djangocms_charts.forms import DatasetInputForm, OptionsInlineFormBase
 from djangocms_charts.models import ChartModel, DatasetModel
 from djangocms_charts.models_options import (
     OptionsBase,
@@ -616,4 +618,136 @@ class GlobalOptionsTests(TestCase):
         result = GlobalOptionsGroupModel.get_global_colors(self.site.id)
         self.assertIsNotNone(result)
         self.assertIn('bar', result)
+
+
+# ============================================================
+# Issue 1.6 — get_chart_width/height crash on None / empty
+# ============================================================
+
+class ChartWidthHeightBlankTests(CMSTestCase):
+
+    def _make_chart(self, **kwargs):
+        placeholder = Placeholder.objects.create(slot='wh_test')
+        defaults = dict(label='W', type='bar', table_data='[]',
+                        labels_top=True, labels_left=True, data_series_format='rows')
+        defaults.update(kwargs)
+        return add_plugin(placeholder, 'ChartJsPlugin', 'en', **defaults)
+
+    def test_chart_width_none_returns_empty_string(self):
+        chart = self._make_chart()
+        chart.chart_width = None
+        self.assertEqual(chart.get_chart_width(), '')
+
+    def test_chart_width_empty_string_returns_empty_string(self):
+        chart = self._make_chart()
+        chart.chart_width = ''
+        self.assertEqual(chart.get_chart_width(), '')
+
+    def test_chart_height_none_returns_empty_string(self):
+        chart = self._make_chart()
+        chart.chart_height = None
+        self.assertEqual(chart.get_chart_height(), '')
+
+    def test_chart_height_empty_string_returns_empty_string(self):
+        chart = self._make_chart()
+        chart.chart_height = ''
+        self.assertEqual(chart.get_chart_height(), '')
+
+
+# ============================================================
+# Issues 1.4 & 1.5 — DatasetInputForm clean methods
+# ============================================================
+
+class DatasetFormCleanTests(TestCase):
+
+    def _make_form(self, table_data_value):
+        form = DatasetInputForm.__new__(DatasetInputForm)
+        form.cleaned_data = {'table_data': table_data_value}
+        form._errors = {}
+        return form
+
+    def test_clean_table_data_empty_string_does_not_return_none(self):
+        """Issue 1.4: implicit None return causes TypeError in clean()."""
+        form = self._make_form('')
+        result = form.clean_table_data()
+        self.assertIsNotNone(result)
+
+    def test_clean_table_data_empty_is_json_parseable(self):
+        """Issue 1.4: result must be JSON-parseable so clean() can call json.loads()."""
+        form = self._make_form('')
+        result = form.clean_table_data()
+        self.assertIsNotNone(result)
+        json.loads(result)  # must not raise
+
+    def test_clean_table_data_nonempty_returns_valid_json(self):
+        form = self._make_form(json.dumps([['', 'Jan', 'Feb'], ['Sales', '10', '20']]))
+        result = form.clean_table_data()
+        self.assertIsNotNone(result)
+        self.assertIsInstance(json.loads(result), list)
+
+    def test_dataset_form_clean_returns_cleaned_data(self):
+        """Issue 1.5: clean() must return cleaned_data."""
+        form = self._make_form(json.dumps([['', 'Jan'], ['Sales', '10']]))
+        result = form.clean()
+        self.assertIsNotNone(result)
+        self.assertIn('table_data', result)
+
+    def test_dataset_form_clean_raises_validation_error_for_empty_table(self):
+        """Issues 1.4+1.5: empty table must raise ValidationError, not TypeError/500."""
+        form = self._make_form('')
+        form.clean_table_data()  # returns '[]', sets cleaned state
+        form.cleaned_data['table_data'] = '[]'
+        with self.assertRaises(ValidationError):
+            form.clean()
+
+
+# ============================================================
+# Issue 1.5 — OptionsInlineFormBase.clean() missing return
+# ============================================================
+
+class OptionsFormCleanTests(TestCase):
+
+    def test_options_inline_clean_returns_cleaned_data(self):
+        """Issue 1.5: OptionsInlineFormBase.clean() must return cleaned_data."""
+        group = ChartOptionsGroupModel.objects.create(name='options_clean_test')
+        instance = ChartOptionsModel(options_group=group, label='x', type='number', value='10')
+
+        form = OptionsInlineFormBase.__new__(OptionsInlineFormBase)
+        form.cleaned_data = {'value': '10', 'type': 'number'}
+        form._errors = {}
+        form.instance = instance
+        result = form.clean()
+        self.assertIsNotNone(result)
+        self.assertEqual(result['value'], '10')
+
+
+# ============================================================
+# Issue 1.7 — ColorInputForm.__init__ KeyError on missing keys
+# ============================================================
+
+class ColorInputFormInitTests(TestCase):
+
+    def _bound_form_class(self):
+        from django.forms import modelform_factory
+        from djangocms_charts.forms import ColorInputForm
+        return modelform_factory(ColorModel, form=ColorInputForm,
+                                 fields=['types', 'labels', 'colors'])
+
+    def test_initial_without_types_key_does_not_raise_keyerror(self):
+        """Issue 1.7: inline row whose initial has the FK but no types/labels must not raise KeyError."""
+        BoundForm = self._bound_form_class()
+        # Simulate an extra inline row: initial is non-empty (has FK) but has no types/labels
+        try:
+            BoundForm(initial={'color_group': 1})
+        except KeyError as exc:
+            self.fail(f'ColorInputForm.__init__ raised KeyError: {exc}')
+
+    def test_initial_with_types_and_labels_is_parsed(self):
+        BoundForm = self._bound_form_class()
+        form = BoundForm(initial={
+            'types': "['bar', 'line']",
+            'labels': "['backgroundColor']",
+        })
+        self.assertEqual(form.initial['types'], ['bar', 'line'])
+        self.assertEqual(form.initial['labels'], ['backgroundColor'])
 

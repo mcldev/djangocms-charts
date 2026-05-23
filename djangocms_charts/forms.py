@@ -29,6 +29,7 @@ class OptionsInlineFormBase(ModelForm):
                 code='invalid',
                 params={'value': val},
             )
+        return cleaned_data
 
     class Media:
         js = (
@@ -103,6 +104,7 @@ class DatasetInputForm(ModelForm):
             data_check_cols = transpose(data_check_cols)
 
             return json.dumps(list(data_check_cols))
+        return '[]'
 
 
     # Add the cleaned csv data to the table
@@ -120,10 +122,11 @@ class DatasetInputForm(ModelForm):
 
     def clean(self):
         cleaned_data = super().clean()
-        table_data = cleaned_data.get("table_data")
+        table_data = cleaned_data.get("table_data") or '[]'
         check_data = json.loads(table_data)
         if not check_data:
             raise ValidationError("Error: missing chart data from table or CSV file input")
+        return cleaned_data
 
     class Meta:
         labels = {
@@ -145,8 +148,8 @@ class ColorInputForm(ModelForm):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        if self.initial and self.initial['types']:
+        if self.initial.get('types'):
             self.initial['types'] = json.loads(self.initial['types'].replace("'", '"'))
-        if self.initial and self.initial['labels']:
+        if self.initial.get('labels'):
             self.initial['labels'] = json.loads(self.initial['labels'].replace("'", '"'))
 

@@ -61,16 +61,14 @@ class ChartModel(CMSPlugin, DatasetBase):
             option.save()
 
     def get_chart_width(self):
-        if self.chart_width.isnumeric():
-            return f'{self.chart_width}px'
-        else:
-            return self.chart_width
-        
+        if not self.chart_width:
+            return ''
+        return f'{self.chart_width}px' if self.chart_width.isnumeric() else self.chart_width
+
     def get_chart_height(self):
-        if self.chart_height.isnumeric():
-            return f'{self.chart_height}px'
-        else:
-            return self.chart_height
+        if not self.chart_height:
+            return ''
+        return f'{self.chart_height}px' if self.chart_height.isnumeric() else self.chart_height
         
     def get_chart_as_dict(self, site_id=None):
 
