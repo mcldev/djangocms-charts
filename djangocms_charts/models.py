@@ -209,6 +209,18 @@ class DatasetModel(CMSPlugin, DatasetBase):
     """
     Charts Model
     """
+    def copy_relations(self, old_instance):
+        # Before copying related objects from the old instance, the ones
+        # on the current one need to be deleted. Otherwise, duplicates may
+        # appear on the public version of the page
+        self.options.all().delete()
+
+        for option in old_instance.options.all():
+            # standard Django way of copying a saved model instance
+            option.pk = None
+            option.options_group = self
+            option.save()
+
     # Dataset name
     @property
     def dataset_name(self):
