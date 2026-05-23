@@ -45,7 +45,7 @@ class ChartModel(CMSPlugin, DatasetBase):
     chart_classes = models.TextField(_("Additional classes for Chart"), blank=True)
 
     # Chart options
-    chart_options_group = models.ForeignKey(ChartOptionsGroupModel, on_delete=models.CASCADE,
+    chart_options_group = models.ForeignKey(ChartOptionsGroupModel, on_delete=models.SET_NULL,
                                             related_name="chart_options", blank=True, null=True)
 
     def copy_relations(self, old_instance):
@@ -61,16 +61,14 @@ class ChartModel(CMSPlugin, DatasetBase):
             option.save()
 
     def get_chart_width(self):
-        if self.chart_width.isnumeric():
-            return f'{self.chart_width}px'
-        else:
-            return self.chart_width
-        
+        if not self.chart_width:
+            return ''
+        return f'{self.chart_width}px' if self.chart_width.isnumeric() else self.chart_width
+
     def get_chart_height(self):
-        if self.chart_height.isnumeric():
-            return f'{self.chart_height}px'
-        else:
-            return self.chart_height
+        if not self.chart_height:
+            return ''
+        return f'{self.chart_height}px' if self.chart_height.isnumeric() else self.chart_height
         
     def get_chart_as_dict(self, site_id=None):
 
@@ -211,6 +209,18 @@ class DatasetModel(CMSPlugin, DatasetBase):
     """
     Charts Model
     """
+    def copy_relations(self, old_instance):
+        # Before copying related objects from the old instance, the ones
+        # on the current one need to be deleted. Otherwise, duplicates may
+        # appear on the public version of the page
+        self.options.all().delete()
+
+        for option in old_instance.options.all():
+            # standard Django way of copying a saved model instance
+            option.pk = None
+            option.options_group = self
+            option.save()
+
     # Dataset name
     @property
     def dataset_name(self):

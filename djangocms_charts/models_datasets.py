@@ -30,10 +30,10 @@ class DatasetBase(OptionsParentBase):
     # Set Options and Axes
     color_by_dataset = models.BooleanField(_('Color by Dataset'), blank=True, null=True, default=False,
                                            help_text=_('True to color each Dataset, False to color each element in a Series'))
-    colors = models.ForeignKey('ColorGroupModel', on_delete=models.CASCADE, related_name="%(class)s_colors", blank=True, null=True)
-    dataset_options_group = models.ForeignKey('DatasetOptionsGroupModel', on_delete=models.CASCADE, related_name="%(class)s_options", blank=True, null=True)
-    xAxis = models.ForeignKey('AxisOptionsGroupModel', on_delete=models.CASCADE, related_name="%(class)s_xAxis", blank=True, null=True)
-    yAxis = models.ForeignKey('AxisOptionsGroupModel', on_delete=models.CASCADE, related_name="%(class)s_yAxis", blank=True, null=True)
+    colors = models.ForeignKey('ColorGroupModel', on_delete=models.SET_NULL, related_name="%(class)s_colors", blank=True, null=True)
+    dataset_options_group = models.ForeignKey('DatasetOptionsGroupModel', on_delete=models.SET_NULL, related_name="%(class)s_options", blank=True, null=True)
+    xAxis = models.ForeignKey('AxisOptionsGroupModel', on_delete=models.SET_NULL, related_name="%(class)s_xAxis", blank=True, null=True)
+    yAxis = models.ForeignKey('AxisOptionsGroupModel', on_delete=models.SET_NULL, related_name="%(class)s_yAxis", blank=True, null=True)
 
     def save(self, *args, **kwargs):
         super().save(*args, **kwargs)
