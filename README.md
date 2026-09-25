@@ -8,6 +8,35 @@ A plugin for DjangoCMS that creates easy to use and fully customisable ChartJs (
 
 ## Updates / Changelog
 
+### 3.2.0 - *Bug-fix release* (2026-05)
+- **Critical bug fixes** - seven runtime crashes resolved:
+  - `views.py`: removed long-deleted `cms.utils.moderator` import that caused
+    `ImportError` whenever `djangocms_charts.urls` was included in a URLconf.
+    Child plugins are now fetched via `CMSPlugin.objects.filter()`.
+  - `views.py`: `Http404` was returned as a response object instead of raised,
+    causing Django to 500. Now correctly raised.
+  - `forms.py`: `DatasetInputForm.clean_table_data()` returned `None` for empty
+    input, causing a `TypeError` in the follow-up `clean()`. Now returns `'[]'`
+    so the user sees a `ValidationError` instead of a 500.
+  - `forms.py`: `OptionsInlineFormBase.clean()` and `DatasetInputForm.clean()`
+    did not return `cleaned_data`, breaking cross-field validation in formsets.
+    Both now return `cleaned_data`.
+  - `models.py`: `get_chart_width()` / `get_chart_height()` raised
+    `AttributeError` when the field was `NULL`. Both now return `''` for
+    absent values.
+  - `forms.py`: `ColorInputForm.__init__` raised `KeyError` on `types`/`labels`
+    for extra inline rows whose `initial` dict contained only the FK. Fixed
+    with `.get()`.
+- **Data integrity fix** - all five nullable preset `ForeignKey` fields on
+  `ChartModel` and `DatasetModel` changed from `on_delete=CASCADE` to
+  `on_delete=SET_NULL`. Previously, deleting a color group, axis, or options
+  group would silently cascade-delete every chart and dataset that referenced
+  it. Migration `0012` applies the schema change with no data modification.
+- **CMS page copy fix** - `DatasetModel` was missing `copy_relations()`, so
+  duplicating a CMS page would share dataset-specific option rows between the
+  original and the copy instead of creating independent duplicates.
+- **Regression tests** added for all of the above (85 tests total).
+
 ### 3.1.0 - *Django 4.2 / djangoCMS 3.11 / Python 3.11* (2026-03 → 2026-05)
 - **Upgrade to Django 4.2 LTS, django CMS 3.11, Python 3.9 – 3.11.**
   - Replaced all `ugettext_lazy` with `gettext_lazy` (removed in Django 4.x)
